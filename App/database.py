@@ -8,6 +8,7 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
         self.client = MongoClient('localhost', 27017)
         self.db = self.client['chat']
         self.messages = self.db['messages']
+        self.messages.create_index('chat_room')
 
     def add_message(self, message):
         self.messages.insert_one(message)
@@ -32,6 +33,7 @@ class User:
         self.client = MongoClient('localhost', 27017)
         self.db = self.client['user']
         self.users = self.db['users']
+        self.users.create_index('Username', unique=True)
 
     def check_password_strength(self, password):
         if len(password) < 12:

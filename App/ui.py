@@ -18,16 +18,17 @@ class UI:
         self.root.mainloop()
 
     def register(self):
-        tk.Label(self.root, text='Login with username').place(x=150, y=50)
-        tk.Label(self.root, text='Username').place(x=100, y=100)
-        self.username = tk.Entry(self.root)
+        self.register_window = tk.Toplevel(self.root)
+        tk.Label(self.register_window, text='Login with username').place(x=150, y=50)
+        tk.Label(self.register_window, text='Username').place(x=100, y=100)
+        self.username = tk.Entry(self.register_window)
         self.username.place(x=150, y=100)
-        tk.Label(self.root, text='Password').place(x=100, y=150)
-        self.password = tk.Entry(self.root, show='*')
+        tk.Label(self.register_window, text='Password').place(x=100, y=150)
+        self.password = tk.Entry(self.register_window, show='*')
         self.password.place(x=150, y=150)
-        tk.Button(self.root, text='Login', command=self.login_user).place(x=150, y=200)
-        tk.Label(self.root, text='Or').place(x=150, y=250)
-        tk.Button(self.root, text='Register', command=self.register_user).place(x=150, y=300)
+        tk.Button(self.register_window, text='Login', command=self.login_user).place(x=150, y=200)
+        tk.Label(self.register_window, text='Or').place(x=150, y=250)
+        tk.Button(self.register_window, text='Register', command=self.register_user).place(x=150, y=300)
     
     def login_user(self):
         username = self.username.get()
@@ -63,8 +64,6 @@ class UI:
         self.register()
 
     def main_window(self):
-        self.username.destroy()
-        self.password.destroy()
-        tk.Label(self.root, text=f'Welcome {self.user}').place(x=150, y=50)
-        tk.Label(self.root, text="Placeholder", font=('Arial', 12)).place(x=150, y=100)
-        tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
+        self. lbl_wel = tk.Label(self.root, text=f'Welcome {self.user}').place(x=150, y=50)
+        self.lbl_plc = tk.Label(self.root, text="Placeholder", font=('Arial', 12)).place(x=150, y=100)
+        self.btn_logo = tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
