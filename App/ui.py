@@ -4,6 +4,7 @@ from tkinter import messagebox
 from tkinter import filedialog
 import crypting as cr
 from database import Database as db
+from database import User as us
 import os
 
 class UI:
@@ -34,10 +35,10 @@ class UI:
         if not username or not password:
             messagebox.showerror('Error', 'Please fill all the fields or register')
             return
-        user = db().check_nm_pwd(username, password)
+        user = us().check_nm_pwd(username, password)
         if user:
             self.user = user['username']
-            self.mainwindow()
+            self.main_window()
         else:
             messagebox.showerror('Error', 'Invalid credentials or register')
 
@@ -47,13 +48,19 @@ class UI:
         if not username or not password:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        user = db().get_user(username)
+        user = us().get_user(username)
         if user:
             messagebox.showerror('Error', 'User already exists')
             return
-        db().add_user(username, password)
+        us().add_user(username, password)
         self.user = username
-        self.mainwindow()
+        self.main_window()
+
+    def logout(self):
+        self.user = None
+        self.username.delete(0, tk.END)
+        self.password.delete(0, tk.END)
+        self.register()
 
     def main_window(self):
         self.username.destroy()
