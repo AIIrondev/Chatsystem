@@ -9,26 +9,30 @@ import os
 
 class UI:
     def run(self):
+        self.register()
         self.user = None
         self.root = tk.Tk()
         self.root.title('Crypting')
         self.root.geometry('400x400')
         self.root.resizable(False, False)
-        self.register()
+        self.main_window()
         self.root.mainloop()
 
     def register(self):
-        self.register_window = tk.Toplevel(self.root)
-        tk.Label(self.register_window, text='Login with username').place(x=150, y=50)
-        tk.Label(self.register_window, text='Username').place(x=100, y=100)
-        self.username = tk.Entry(self.register_window)
+        self.reg = tk.Tk()
+        self.reg.title('Login/Register')
+        self.reg.geometry('400x400')
+        self.reg.resizable(False, False)
+        tk.Label(self.reg, text='Login with username').place(x=150, y=50)
+        tk.Label(self.reg, text='Username').place(x=100, y=100)
+        self.username = tk.Entry(self.reg)
         self.username.place(x=150, y=100)
-        tk.Label(self.register_window, text='Password').place(x=100, y=150)
-        self.password = tk.Entry(self.register_window, show='*')
+        tk.Label(self.reg, text='Password').place(x=100, y=150)
+        self.password = tk.Entry(self.reg, show='*')
         self.password.place(x=150, y=150)
-        tk.Button(self.register_window, text='Login', command=self.login_user).place(x=150, y=200)
-        tk.Label(self.register_window, text='Or').place(x=150, y=250)
-        tk.Button(self.register_window, text='Register', command=self.register_user).place(x=150, y=300)
+        tk.Button(self.reg, text='Login', command=self.login_user).place(x=150, y=200)
+        tk.Label(self.reg, text='Or').place(x=150, y=250)
+        tk.Button(self.reg, text='Register', command=self.register_user).place(x=150, y=300)
     
     def login_user(self):
         username = self.username.get()
@@ -38,7 +42,8 @@ class UI:
             return
         user = us().check_nm_pwd(username, password)
         if user:
-            self.user = user['username']
+            self.user = user['Username']
+            self.reg.destroy()
             self.main_window()
         else:
             messagebox.showerror('Error', 'Invalid credentials or register')
@@ -55,12 +60,11 @@ class UI:
             return
         us().add_user(username, password)
         self.user = username
+        self.reg.destroy()
         self.main_window()
 
     def logout(self):
         self.user = None
-        self.username.delete(0, tk.END)
-        self.password.delete(0, tk.END)
         self.register()
 
     def main_window(self):

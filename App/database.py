@@ -6,7 +6,7 @@ import hashlib
 class Database: # chat database class, preset: (_id, name, message, chat_room)
     def __init__(self):
         self.client = MongoClient('localhost', 27017)
-        self.db = self.client['chat']
+        self.db = self.client['Chatsystem']
         self.messages = self.db['messages']
         self.messages.create_index('chat_room')
 
@@ -31,7 +31,7 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
 class User:
     def __init__(self):
         self.client = MongoClient('localhost', 27017)
-        self.db = self.client['user']
+        self.db = self.client['Chatsystem']
         self.users = self.db['users']
         self.users.create_index('Username', unique=True)
 
