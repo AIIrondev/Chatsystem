@@ -43,6 +43,15 @@ class User:
 
     def check_nm_pwd(self, username, password):
         return self.users.find_one({'Username': username, 'Password': self.hashing(password)})
+    
+    def add_user(self, username, password):
+        if not self.check_password_strength(password):
+            return False
+        self.users.insert_one({'Username': username, 'Password': self.hashing(password)})
+        return True
+
+    def get_user(self, username):
+        return self.users.find_one({'Username': username})
 
     def __str__(self):
         return self.username
