@@ -1,8 +1,8 @@
 from ui import UI
-from database import Database_Messages
+from database import Database
 
 def setup():
-    Database_Messages()
+    Database()
 
 
 if __name__ == '__main__':
