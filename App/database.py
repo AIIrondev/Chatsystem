@@ -2,6 +2,7 @@ import pymongo
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import hashlib
+from tkinter import messagebox
 
 class Database: # chat database class, preset: (_id, name, message, chat_room)
     def __init__(self):
@@ -37,6 +38,7 @@ class User:
 
     def check_password_strength(self, password):
         if len(password) < 12:
+            messagebox.showerror('Critical', 'Password is too weak (12 characters required)\n youre request has been denied')
             return False
         return True
 

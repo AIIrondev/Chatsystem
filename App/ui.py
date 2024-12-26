@@ -58,6 +58,8 @@ class UI:
         if user:
             messagebox.showerror('Error', 'User already exists')
             return
+        if not us().check_password_strength(password):
+            return
         us().add_user(username, password)
         self.user = username
         self.reg.destroy()
@@ -69,5 +71,5 @@ class UI:
 
     def main_window(self):
         self. lbl_wel = tk.Label(self.root, text=f'Welcome {self.user}').place(x=150, y=50)
-        self.lbl_plc = tk.Label(self.root, text="Placeholder", font=('Arial', 12)).place(x=150, y=100)
+        self.lbl_plc = tk.Label(self.root, text="Placeholder", font=('Arial', 12)).place(x=150, y=150)
         self.btn_logo = tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
