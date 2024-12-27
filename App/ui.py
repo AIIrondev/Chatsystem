@@ -65,12 +65,48 @@ class UI:
         self.reg.destroy()
         self.run_main_loop()
 
+    def get_key(self):
+        file = filedialog.askopenfilename()
+        with open(file, 'r') as f:
+            key = f.read()
+        cr().set_key(key)
+
     def logout(self):
         self.user = None
         self.root.destroy()
         self.register()
 
     def main_window(self):
-        self. lbl_wel = tk.Label(self.root, text=f'Welcome {self.user}').place(x=150, y=50)
-        self.lbl_plc = tk.Label(self.root, text="Placeholder", font=('Arial', 12)).place(x=150, y=150)
-        self.btn_logo = tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
+        tk.Label(self.root, text='Welcome to the chat').place(x=150, y=50)
+        tk.Button(self.root, text='New Chatroom', command=self.new_chatroom).place(x=150, y=100)
+        tk.Button(self.root, text='Enter Chatroom', command=self.enter_chatroom).place(x=150, y=150)
+        tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
+
+    def new_chatroom(self): # This function is for creating a new chatroom with the name and the key
+        pass
+
+    def enter_chatroom(self): # This function is for entering the chatroom with the name and the key
+        pass 
+
+    def Chat(self):
+        tk.Label(self.root, text=f'Welcome {self.user}').place(x=150, y=50)
+        tk.Label(self.root, text='Messages').place(x=100, y=75)
+        messages = db().get_messages(self.user)
+        y = 100
+        for message in messages:
+            message = cr().decrypt(message)
+            tk.Label(self.root, text=message).place(x=100, y=y)
+            y += 25
+        tk.Label(self.root, text='Message').place(x=100, y=100)
+        self.message_user = tk.Entry(self.root).place(x=150, y=100)
+        tk.Button(self.root, text="Send", command=self.send_message).place(x=150, y=150)
+        tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
+
+    def send_message(self):
+        message = self.message_user.get()
+        if not message:
+            messagebox.showerror('Error', 'Please fill the message')
+            return
+        message = cr().encrypt(message)
+        db().add_message(self.user, message)
+        messagebox.showinfo('Success', 'Message sent')
