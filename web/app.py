@@ -20,7 +20,7 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Register')
 
-@app.route('/anmelden', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def anmelden():
     form = LoginForm()
     if form.validate_on_submit():
@@ -49,6 +49,10 @@ def register():
         us().add_user(username, password)
         return 'User registered'
     return render_template('register.html', form=form)
+
+@app.route('/index')
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

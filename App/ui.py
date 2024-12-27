@@ -8,9 +8,7 @@ from database import User as us
 import os
 
 class UI:
-    def run(self):
-        self.register()
-        self.user = None
+    def run_main_loop(self):
         self.root = tk.Tk()
         self.root.title('Crypting')
         self.root.geometry('400x400')
@@ -19,6 +17,7 @@ class UI:
         self.root.mainloop()
 
     def register(self):
+        self.user = None
         self.reg = tk.Tk()
         self.reg.title('Login/Register')
         self.reg.geometry('400x400')
@@ -33,6 +32,7 @@ class UI:
         tk.Button(self.reg, text='Login', command=self.login_user).place(x=150, y=200)
         tk.Label(self.reg, text='Or').place(x=150, y=250)
         tk.Button(self.reg, text='Register', command=self.register_user).place(x=150, y=300)
+        self.reg.mainloop()
     
     def login_user(self):
         username = self.username.get()
@@ -44,7 +44,7 @@ class UI:
         if user:
             self.user = user['Username']
             self.reg.destroy()
-            self.main_window()
+            self.run_main_loop()
         else:
             messagebox.showerror('Error', 'Invalid credentials or register')
 
@@ -63,10 +63,11 @@ class UI:
         us().add_user(username, password)
         self.user = username
         self.reg.destroy()
-        self.main_window()
+        self.run_main_loop()
 
     def logout(self):
         self.user = None
+        self.root.destroy()
         self.register()
 
     def main_window(self):
