@@ -22,4 +22,6 @@ class Crypting:
         self.key = base64.b64decode(key)
 
     def generate_key(self):
-        return base64.b64encode(SHA256.new(os.urandom(16)).digest()).decode()
+        self.key = base64.b64encode(SHA256.new(os.urandom(16)).digest()).decode()
+        self.set_key(self.key)
+        return self.key

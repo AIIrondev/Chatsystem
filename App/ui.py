@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
-import crypting as cr
+from crypting import Crypting as cr
 from database import Database as db
 from database import User as us
 import os
@@ -105,20 +105,47 @@ class UI:
         self.key.delete(0, tk.END)
         self.key.insert(0, self.key_chatroom)
 
+    def create_chatroom(self):
+        name = self.name.get()
+        key = self.key.get()
+        if not name or not key:
+            messagebox.showerror('Error', 'Please fill all the fields')
+            return
+        db().add_chatroom(name, key)
+        messagebox.showinfo('Success', 'Chatroom created')
+        self.nc.destroy()
+        self.Chat()
+
     def enter_chatroom(self):
-        self.nc = tk.Tk()
-        self.nc.title('Join Chatroom')
-        self.nc.geometry('400x400')
-        self.nc.resizable(False, False)
-        tk.Label(self.root, text='Join Chatroom').place(x=150, y=50)
-        tk.Label(self.root, text='Name').place(x=100, y=100)
-        self.name = tk.Entry(self.root)
+        self.ec = tk.Tk()
+        self.ec.title('Join Chatroom')
+        self.ec.geometry('400x400')
+        self.ec.resizable(False, False)
+        tk.Label(self.ec, text='Join Chatroom').place(x=150, y=50)
+        tk.Label(self.ec, text='Name').place(x=100, y=100)
+        self.name = tk.Entry(self.ec)
         self.name.place(x=150, y=100)
-        tk.Label(self.root, text='Key').place(x=100, y=150)
-        self.key = tk.Entry(self.root)
+        tk.Label(self.ec, text='Key').place(x=100, y=150)
+        self.key = tk.Entry(self.ec)
         self.key.place(x=150, y=150)
-        tk.Button(self.nc, text='Enter Key', command=self.select_key_file).place(x=220, y=150)
-        tk.Button(self.root, text='Join', command=self.join_chatroom).place(x=150, y=200)
+        tk.Button(self.ec, text='Enter Key', command=self.select_key_file).place(x=220, y=150)
+        tk.Button(self.ec, text='Join', command=self.join_chatroom).place(x=150, y=200)
+    
+    def join_chatroom(self):
+        name = self.name.get()
+        key = self.key.get()
+        if not name or not key:
+            messagebox.showerror('Error', 'Please fill all the fields')
+            return
+        chatroom = db().get_chatroom(name)
+        if not chatroom:
+            messagebox.showerror('Error', 'Chatroom does not exist')
+            return
+        if chatroom['Key'] != key:
+            messagebox.showerror('Error', 'Invalid key')
+            return
+        self.ec.destroy()
+        self.Chat()
 
     def select_key_file(self):
         file = filedialog.askopenfilename()
