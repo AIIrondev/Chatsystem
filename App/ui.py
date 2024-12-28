@@ -83,10 +83,49 @@ class UI:
         tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
 
     def new_chatroom(self): # This function is for creating a new chatroom with the name and the key
-        pass
+        self.key_chatroom = cr().generate_key()
+        self.nc = tk.Tk()
+        self.nc.title('Create Chatroom')
+        self.nc.geometry('400x400')
+        self.nc.resizable(False, False)
+        tk.Label(self.nc, text='Create Chatroom').place(x=150, y=50)
+        tk.Label(self.nc, text='Name').place(x=100, y=100)
+        self.name = tk.Entry(self.nc)
+        self.name.place(x=150, y=100)
+        tk.Label(self.nc, text='Key').place(x=100, y=150)
+        self.key = tk.Entry(self.nc)
+        self.key.place(x=150, y=150)
+        tk.Button(self.nc, text='Generate Key', command=self.generate_key_file).place(x=220, y=150)
+        tk.Button(self.nc, text='Create', command=self.create_chatroom).place(x=150, y=200)
+
+    def generate_key_file(self):
+        file = filedialog.asksaveasfilename()
+        with open(file, 'w') as f:
+            f.write(self.key_chatroom)
+        self.key.delete(0, tk.END)
+        self.key.insert(0, self.key_chatroom)
 
     def enter_chatroom(self): # This function is for entering the chatroom with the name and the key
-        pass 
+        self.nc = tk.Tk()
+        self.nc.title('Join Chatroom')
+        self.nc.geometry('400x400')
+        self.nc.resizable(False, False)
+        tk.Label(self.root, text='Join Chatroom').place(x=150, y=50)
+        tk.Label(self.root, text='Name').place(x=100, y=100)
+        self.name = tk.Entry(self.root)
+        self.name.place(x=150, y=100)
+        tk.Label(self.root, text='Key').place(x=100, y=150)
+        self.key = tk.Entry(self.root)
+        self.key.place(x=150, y=150)
+        tk.Button(self.nc, text='Enter Key', command=self.select_key_file).place(x=220, y=150)
+        tk.Button(self.root, text='Join', command=self.join_chatroom).place(x=150, y=200)
+
+    def select_key_file(self):
+        file = filedialog.askopenfilename()
+        with open(file, 'r') as f:
+            self.key_chatroom = f.read()
+        self.key.delete(0, tk.END)
+        self.key.insert(0, self.key_chatroom)
 
     def Chat(self):
         tk.Label(self.root, text=f'Welcome {self.user}').place(x=150, y=50)
