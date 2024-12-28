@@ -82,7 +82,7 @@ class UI:
         tk.Button(self.root, text='Enter Chatroom', command=self.enter_chatroom).place(x=150, y=150)
         tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
 
-    def new_chatroom(self): # This function is for creating a new chatroom with the name and the key
+    def new_chatroom(self):
         self.key_chatroom = cr().generate_key()
         self.nc = tk.Tk()
         self.nc.title('Create Chatroom')
@@ -105,7 +105,7 @@ class UI:
         self.key.delete(0, tk.END)
         self.key.insert(0, self.key_chatroom)
 
-    def enter_chatroom(self): # This function is for entering the chatroom with the name and the key
+    def enter_chatroom(self):
         self.nc = tk.Tk()
         self.nc.title('Join Chatroom')
         self.nc.geometry('400x400')
