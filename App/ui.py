@@ -101,7 +101,7 @@ class UI:
     def generate_key_file(self):
         file = filedialog.asksaveasfilename()
         with open(file, 'w') as f:
-            f.write(self.key_chatroom)
+            f.write(str(self.key_chatroom))
         self.key.delete(0, tk.END)
         self.key.insert(0, self.key_chatroom)
 

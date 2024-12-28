@@ -14,6 +14,9 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
     def add_message(self, message):
         self.messages.insert_one(message)
 
+    def add_chatroom(self, name, key):
+        self.messages.insert_one({'name': name, 'key': key})
+
     def get_messages(self):
         return self.messages.find()
 
