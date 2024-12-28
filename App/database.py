@@ -11,14 +11,17 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
         self.messages = self.db['messages']
         self.messages.create_index('chat_room')
 
-    def add_message(self, message):
+    def add_message(self, message, user, chat_room):
         self.messages.insert_one(message)
 
     def add_chatroom(self, name, key):
         self.messages.insert_one({'name': name, 'key': key})
 
-    def get_messages(self):
-        return self.messages.find()
+    def get_chatroom(self, name):
+        return self.messages.find_one({'name': name})
+
+    def get_messages(self, chat_room):
+        return self.messages.find({'chat_room': chat_room})
 
     def get_message(self, message_id):
         return self.messages.find_one({'_id': ObjectId(message_id)})
