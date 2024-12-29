@@ -7,6 +7,7 @@ from database import Database as db
 from database import User as us
 from database import Chatroom as ch
 import os
+import base64
 
 class UI:
     def run_main_loop(self):
@@ -143,25 +144,29 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        chatroom = ch().get_chatroom(name)
+        chatroom = self.chatroom.get_chatroom(name)
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
-        cr().set_key(key)
-        key = cr().decrypt("Password") # Modify this line for your own key
-        if chatroom['key'] != key:
+        cr_instance = cr()
+        cr_instance.set_key(base64.b64decode(key))
+        try:
+            decrypted_key = cr_instance.decrypt(chatroom['key'])
+            if decrypted_key != "Password":  # Modify this line for your own key validation
+                messagebox.showerror('Error', 'Invalid key')
+                return
+        except ValueError:
             messagebox.showerror('Error', 'Invalid key')
             return
         self.ec.destroy()
         self.Chat()
-        ch().close()
 
     def select_key_file(self):
         file = filedialog.askopenfilename()
         with open(file, 'rb') as f:
             self.key_chatroom = f.read()
         self.key.delete(0, tk.END)
-        self.key.insert(0, self.key_chatroom)
+        self.key.insert(0, base64.b64encode(self.key_chatroom).decode())
 
     def Chat(self):
         self.root.destroy()
@@ -173,9 +178,11 @@ class UI:
         tk.Label(self.ch, text='Messages').place(x=100, y=75)
         messages = db().get_messages(self.user)
         y = 100
+        cr_instance = cr()
+        cr_instance.set_key(self.key_chatroom)  # Set the key for decryption
         for message in messages:
-            message = cr().decrypt(message)
-            tk.Label(self.ch, text=message).place(x=100, y=y)
+            decrypted_message = cr_instance.decrypt(message['message'])
+            tk.Label(self.ch, text=decrypted_message).place(x=100, y=y)
             y += 25
         tk.Label(self.ch, text='Message').place(x=100, y=100)
         self.message_user = tk.Entry(self.ch)
@@ -190,8 +197,10 @@ class UI:
         if not message:
             messagebox.showerror('Error', 'Please fill the message')
             return
-        message = cr().encrypt(message)
-        db().add_message(self.user, message)
+        cr_instance = cr()
+        cr_instance.set_key(self.key_chatroom)  # Set the key for encryption
+        encrypted_message = cr_instance.encrypt(message)
+        db().add_message({'message': encrypted_message, 'chat_room': self.user})  # Ensure the message is stored correctly
         messagebox.showinfo('Success', 'Message sent')
         self.message_user.delete(0, tk.END)
         self.Chat()

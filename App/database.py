@@ -38,7 +38,12 @@ class Chatroom:
         self.chatrooms.create_index('name', unique=True)
 
     def add_chatroom(self, name, key):
-        self.chatrooms.insert_one({'name': name, 'key': key})
+        try:
+            self.chatrooms.insert_one({'name': name, 'key': key})
+            return True
+        except pymongo.errors.DuplicateKeyError:
+            messagebox.showerror('Error', 'Chatroom already exists')
+            return False
 
     def get_chatroom(self, name):
         return self.chatrooms.find_one({'name': name})
