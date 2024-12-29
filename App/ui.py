@@ -105,8 +105,8 @@ class UI:
 
     def generate_key_file(self):
         file = filedialog.asksaveasfilename()
-        with open(file, 'w') as f:
-            f.write(str(self.key_chatroom))
+        with open(file, 'wb') as f:
+            f.write(self.key_chatroom)
         self.key.delete(0, tk.END)
         self.key.insert(0, self.key_chatroom)
 
@@ -116,7 +116,7 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        key = cr().encrypt(key)
+        key = cr().encrypt("Password") # Modify this line for your own key
         ch().add_chatroom(name, key)
         messagebox.showinfo('Success', 'Chatroom created')
         self.nc.destroy()
@@ -148,16 +148,17 @@ class UI:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
         cr().set_key(key)
-        key = cr().decrypt(key)
+        key = cr().decrypt("Password") # Modify this line for your own key
         if chatroom['key'] != key:
             messagebox.showerror('Error', 'Invalid key')
             return
         self.ec.destroy()
         self.Chat()
+        ch().close()
 
     def select_key_file(self):
         file = filedialog.askopenfilename()
-        with open(file, 'r') as f:
+        with open(file, 'rb') as f:
             self.key_chatroom = f.read()
         self.key.delete(0, tk.END)
         self.key.insert(0, self.key_chatroom)
@@ -177,10 +178,12 @@ class UI:
             tk.Label(self.ch, text=message).place(x=100, y=y)
             y += 25
         tk.Label(self.ch, text='Message').place(x=100, y=100)
-        self.message_user = tk.Entry(self.ch).place(x=150, y=100)
+        self.message_user = tk.Entry(self.ch)
+        self.message_user.place(x=150, y=100)
         tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=150)
         tk.Button(self.ch, text='Refresh', command=self.Chat).place(x=150, y=200)
         tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=250)
+        db().close()
 
     def send_message(self):
         message = self.message_user.get()
@@ -190,3 +193,6 @@ class UI:
         message = cr().encrypt(message)
         db().add_message(self.user, message)
         messagebox.showinfo('Success', 'Message sent')
+        self.message_user.delete(0, tk.END)
+        self.Chat()
+        db().close()

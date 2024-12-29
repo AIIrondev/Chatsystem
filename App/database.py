@@ -26,7 +26,7 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
     def update_message(self, message_id, message):
         self.messages.update_one({'_id': ObjectId(message_id)}, {'$set': message})
 
-    def __del__(self):
+    def close(self):
         self.client.close()
 
 
@@ -43,7 +43,7 @@ class Chatroom:
     def get_chatroom(self, name):
         return self.chatrooms.find_one({'name': name})
 
-    def __del__(self):
+    def close(self):
         self.client.close()
 
 class User:
