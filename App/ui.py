@@ -10,8 +10,11 @@ import os
 
 class UI:
     def run_main_loop(self):
+        self.ch = None
+        if self.ch is not None:
+            self.ch.destroy()
         self.root = tk.Tk()
-        self.root.title('Crypting')
+        self.root.title('Chat')
         self.root.geometry('400x400')
         self.root.resizable(False, False)
         self.main_window()
@@ -74,6 +77,7 @@ class UI:
 
     def logout(self):
         self.user = None
+        self.ch.destroy()
         self.root.destroy()
         self.register()
 
@@ -112,7 +116,7 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        self.key_chatroom = cr().encrypt(key)
+        key = cr().encrypt(key)
         ch().add_chatroom(name, key)
         messagebox.showinfo('Success', 'Chatroom created')
         self.nc.destroy()
@@ -143,6 +147,8 @@ class UI:
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
+        cr().set_key(key)
+        key = cr().decrypt(key)
         if chatroom['key'] != key:
             messagebox.showerror('Error', 'Invalid key')
             return
@@ -157,18 +163,24 @@ class UI:
         self.key.insert(0, self.key_chatroom)
 
     def Chat(self):
-        tk.Label(self.root, text=f'Welcome {self.user}').place(x=150, y=50)
-        tk.Label(self.root, text='Messages').place(x=100, y=75)
+        self.root.destroy()
+        self.ch = tk.Tk()
+        self.ch.title('Chat')
+        self.ch.geometry('400x400')
+        self.ch.resizable(False, False)
+        tk.Label(self.ch, text=f'Welcome {self.user}').place(x=150, y=50)
+        tk.Label(self.ch, text='Messages').place(x=100, y=75)
         messages = db().get_messages(self.user)
         y = 100
         for message in messages:
             message = cr().decrypt(message)
-            tk.Label(self.root, text=message).place(x=100, y=y)
+            tk.Label(self.ch, text=message).place(x=100, y=y)
             y += 25
-        tk.Label(self.root, text='Message').place(x=100, y=100)
-        self.message_user = tk.Entry(self.root).place(x=150, y=100)
-        tk.Button(self.root, text="Send", command=self.send_message).place(x=150, y=150)
-        tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
+        tk.Label(self.ch, text='Message').place(x=100, y=100)
+        self.message_user = tk.Entry(self.ch).place(x=150, y=100)
+        tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=150)
+        tk.Button(self.ch, text='Refresh', command=self.Chat).place(x=150, y=200)
+        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=250)
 
     def send_message(self):
         message = self.message_user.get()
