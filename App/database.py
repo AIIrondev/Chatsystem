@@ -14,12 +14,6 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
     def add_message(self, message):
         self.messages.insert_one(message)
 
-    def add_chatroom(self, name, key):
-        self.messages.insert_one({'name': name, 'key': key})
-
-    def get_chatroom(self, name):
-        return self.messages.find_one({'name': name})
-
     def get_messages(self, chat_room):
         return self.messages.find({'chat_room': chat_room})
 
@@ -31,6 +25,23 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
 
     def update_message(self, message_id, message):
         self.messages.update_one({'_id': ObjectId(message_id)}, {'$set': message})
+
+    def __del__(self):
+        self.client.close()
+
+
+class Chatroom:
+    def __init__(self):
+        self.client = MongoClient('localhost', 27017)
+        self.db = self.client['Chatsystem']
+        self.chatrooms = self.db['chatrooms']
+        self.chatrooms.create_index('name', unique=True)
+
+    def add_chatroom(self, name, key):
+        self.chatrooms.insert_one({'name': name, 'key': key})
+
+    def get_chatroom(self, name):
+        return self.chatrooms.find_one({'name': name})
 
     def __del__(self):
         self.client.close()

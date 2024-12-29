@@ -5,6 +5,7 @@ from tkinter import filedialog
 from crypting import Crypting as cr
 from database import Database as db
 from database import User as us
+from database import Chatroom as ch
 import os
 
 class UI:
@@ -111,7 +112,7 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        db().add_chatroom(name, key)
+        ch().add_chatroom(name, key)
         messagebox.showinfo('Success', 'Chatroom created')
         self.nc.destroy()
         self.Chat()
@@ -137,11 +138,11 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        chatroom = db().get_chatroom(name)
+        chatroom = ch().get_chatroom(name)
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
-        if chatroom['Key'] != key:
+        if chatroom['key'] != key:
             messagebox.showerror('Error', 'Invalid key')
             return
         self.ec.destroy()
