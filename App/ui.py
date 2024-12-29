@@ -70,12 +70,6 @@ class UI:
         self.reg.destroy()
         self.run_main_loop()
 
-    def get_key(self):
-        file = filedialog.askopenfilename()
-        with open(file, 'r') as f:
-            key = f.read()
-        cr().set_key(key)
-
     def logout(self):
         self.user = None
         self.ch.destroy()
@@ -89,7 +83,6 @@ class UI:
         tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
 
     def new_chatroom(self):
-        self.key_chatroom = cr().generate_key()
         self.nc = tk.Tk()
         self.nc.title('Create Chatroom')
         self.nc.geometry('400x400')
@@ -101,15 +94,7 @@ class UI:
         tk.Label(self.nc, text='Key').place(x=70, y=150)
         self.key = tk.Entry(self.nc)
         self.key.place(x=120, y=150)
-        tk.Button(self.nc, text='Generate Key', command=self.generate_key_file).place(x=290, y=150)
         tk.Button(self.nc, text='Create', command=self.create_chatroom).place(x=150, y=200)
-
-    def generate_key_file(self):
-        file = filedialog.asksaveasfilename(defaultextension='.key')
-        with open(file, 'wb') as f:
-            f.write(self.key_chatroom)
-        self.key.delete(0, tk.END)
-        self.key.insert(0, self.key_chatroom)
 
     def create_chatroom(self):
         name = self.name.get()
@@ -117,10 +102,8 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        cr_inst = cr()
-        cr_inst.set_key(cr_inst.generate_key())
-        encrypted_key = cr_inst.encrypt("Password")  # Modify this line for your own key
-        ch().add_chatroom(name, encrypted_key)
+        ch().add_chatroom(name, ch().hashing(key))
+        self.key_chatroom = key
         messagebox.showinfo('Success', 'Chatroom created')
         self.nc.destroy()
         self.Chat()
@@ -137,7 +120,6 @@ class UI:
         tk.Label(self.ec, text='Key').place(x=100, y=150)
         self.key = tk.Entry(self.ec)
         self.key.place(x=150, y=150)
-        tk.Button(self.ec, text='Enter Key', command=self.select_key_file).place(x=220, y=150)
         tk.Button(self.ec, text='Join', command=self.join_chatroom).place(x=150, y=200)
     
     def join_chatroom(self):
@@ -150,25 +132,11 @@ class UI:
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
-        cr_instance = cr()
-        cr_instance.set_key(base64.b64decode(key))
-        try:
-            decrypted_key = cr_instance.decrypt(chatroom['key'])
-            if decrypted_key != "Password":  # Modify this line for your own key validation
-                messagebox.showerror('Error', 'Invalid key')
-                return
-        except ValueError:
+        if ch().hashing(key) != chatroom['key']:
             messagebox.showerror('Error', 'Invalid key')
             return
         self.ec.destroy()
         self.Chat()
-
-    def select_key_file(self):
-        file = filedialog.askopenfilename(defaultextension='.key')
-        with open(file, 'rb') as f:
-            self.key_chatroom = f.read()
-        self.key.delete(0, tk.END)
-        self.key.insert(0, base64.b64encode(self.key_chatroom).decode())
 
     def Chat(self):
         if self.root is not None:
@@ -182,7 +150,7 @@ class UI:
         messages = db().get_messages(self.user)
         y = 100
         cr_instance = cr()
-        cr_instance.set_key(self.key_chatroom)  # Set the key for decryption
+        cr_instance.set_key(ch().hashing(self.key_chatroom))
         for message in messages:
             decrypted_message = cr_instance.decrypt(message['message'])
             tk.Label(self.ch, text=decrypted_message).place(x=100, y=y)
@@ -201,7 +169,7 @@ class UI:
             messagebox.showerror('Error', 'Please fill the message')
             return
         cr_instance = cr()
-        cr_instance.set_key(self.key_chatroom)
+        cr_instance.set_key(ch().hashing(self.key_chatroom))
         encrypted_message = cr_instance.encrypt(message)
         db().add_message({'message': encrypted_message, 'chat_room': self.user})
         messagebox.showinfo('Success', 'Message sent')

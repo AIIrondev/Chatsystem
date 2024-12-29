@@ -24,9 +24,5 @@ class Crypting:
     def set_key(self, key):
         self.key = SHA256.new(key.encode()).digest()
 
-    def generate_key(self):
-        self.key = SHA256.new(os.urandom(16)).digest()
-        return self.key
-
     def get_key(self):
         return self.key

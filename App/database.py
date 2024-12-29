@@ -37,6 +37,12 @@ class Chatroom:
         self.chatrooms = self.db['chatrooms']
         self.chatrooms.create_index('name', unique=True)
 
+    def hashing(self, key):
+        return hashlib.sha256(key.encode()).hexdigest()
+
+    def check_key(self, key):
+        return self.chatrooms.find_one({'key': key})
+
     def add_chatroom(self, name, key):
         try:
             self.chatrooms.insert_one({'name': name, 'key': key})
