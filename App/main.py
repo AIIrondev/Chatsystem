@@ -9,4 +9,7 @@ def setup():
 
 if __name__ == '__main__':
     setup()
-    UI().register()
+    try:
+        UI().register()
+    except:
+        UI.close()

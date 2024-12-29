@@ -6,7 +6,7 @@ from tkinter import messagebox
 
 class Crypting:
     def __init__(self):
-        self.key = SHA256.new(os.urandom(16)).digest()
+        self.key = None
 
     def encrypt(self, message):
         cipher = AES.new(self.key, AES.MODE_GCM)

@@ -199,10 +199,17 @@ class UI:
             messagebox.showerror('Error', 'Please fill the message')
             return
         cr_instance = cr()
-        cr_instance.set_key(self.key_chatroom)  # Set the key for encryption
+        cr_instance.set_key(self.key_chatroom)
         encrypted_message = cr_instance.encrypt(message)
-        db().add_message({'message': encrypted_message, 'chat_room': self.user})  # Ensure the message is stored correctly
+        db().add_message({'message': encrypted_message, 'chat_room': self.user})
         messagebox.showinfo('Success', 'Message sent')
         self.message_user.delete(0, tk.END)
         self.Chat()
         db().close()
+
+    def close(self):
+        self.root.destroy()
+        self.ch.destroy()
+        self.reg.destroy()
+        self.nc.destroy()
+        self.ec.destroy()
