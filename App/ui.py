@@ -105,7 +105,7 @@ class UI:
         tk.Button(self.nc, text='Create', command=self.create_chatroom).place(x=150, y=200)
 
     def generate_key_file(self):
-        file = filedialog.asksaveasfilename()
+        file = filedialog.asksaveasfilename(defaultextension='.key')
         with open(file, 'wb') as f:
             f.write(self.key_chatroom)
         self.key.delete(0, tk.END)
@@ -144,7 +144,7 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        chatroom = self.chatroom.get_chatroom(name)
+        chatroom = ch().get_chatroom(name)
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
@@ -162,14 +162,15 @@ class UI:
         self.Chat()
 
     def select_key_file(self):
-        file = filedialog.askopenfilename()
+        file = filedialog.askopenfilename(defaultextension='.key')
         with open(file, 'rb') as f:
             self.key_chatroom = f.read()
         self.key.delete(0, tk.END)
         self.key.insert(0, base64.b64encode(self.key_chatroom).decode())
 
     def Chat(self):
-        self.root.destroy()
+        if self.root is not None:
+            self.root.destroy()
         self.ch = tk.Tk()
         self.ch.title('Chat')
         self.ch.geometry('400x400')
