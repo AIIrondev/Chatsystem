@@ -117,8 +117,10 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        key = cr().encrypt("Password") # Modify this line for your own key
-        ch().add_chatroom(name, key)
+        cr_inst = cr()
+        cr_inst.set_key(cr_inst.generate_key())
+        encrypted_key = cr_inst.encrypt("Password")  # Modify this line for your own key
+        ch().add_chatroom(name, encrypted_key)
         messagebox.showinfo('Success', 'Chatroom created')
         self.nc.destroy()
         self.Chat()
