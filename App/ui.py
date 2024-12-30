@@ -103,8 +103,12 @@ class UI:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
         ch().add_chatroom(name, ch().hashing(key))
-        self.key_chatroom = key
         messagebox.showinfo('Success', 'Chatroom created')
+        cr_instance = cr()
+        cr_instance.set_key(ch().hashing(key))
+        message = cr_instance.encrypt('Welcome to the chatroom')
+        db().add_message({'message': message, 'chat_room': name})
+        self.key_chatroom = key
         self.nc.destroy()
         self.Chat()
 
@@ -132,9 +136,10 @@ class UI:
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
-        if ch().hashing(key) != chatroom['key']:
+        if chatroom['key'] != ch().hashing(key):
             messagebox.showerror('Error', 'Invalid key')
             return
+        self.key_chatroom = key
         self.ec.destroy()
         self.Chat()
 
@@ -150,7 +155,9 @@ class UI:
         messages = db().get_messages(self.user)
         y = 100
         cr_instance = cr()
+        print(self.key_chatroom + "160")
         cr_instance.set_key(ch().hashing(self.key_chatroom))
+        self.key_chatroom = ch().hashing(self.key_chatroom)
         for message in messages:
             decrypted_message = cr_instance.decrypt(message['message'])
             tk.Label(self.ch, text=decrypted_message).place(x=100, y=y)
@@ -170,7 +177,9 @@ class UI:
             return
         cr_instance = cr()
         cr_instance.set_key(ch().hashing(self.key_chatroom))
+        print(self.key_chatroom + "186")
         encrypted_message = cr_instance.encrypt(message)
+        print(encrypted_message + "188")
         db().add_message({'message': encrypted_message, 'chat_room': self.user})
         messagebox.showinfo('Success', 'Message sent')
         self.message_user.delete(0, tk.END)
