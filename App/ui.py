@@ -72,8 +72,10 @@ class UI:
 
     def logout(self):
         self.user = None
-        self.ch.destroy()
-        self.root.destroy()
+        if self.ch is not None:
+            self.ch.destroy()
+        if self.root is not None:
+            self.root.destroy()
         self.register()
 
     def main_window(self):
@@ -183,6 +185,8 @@ class UI:
         db().add_message({'message': encrypted_message, 'chat_room': self.user})
         messagebox.showinfo('Success', 'Message sent')
         self.message_user.delete(0, tk.END)
+        if self.root is not None and self.root.winfo_exists():
+            self.root.destroy()
         self.Chat()
         db().close()
 

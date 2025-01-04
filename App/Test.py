@@ -1,5 +1,3 @@
-# main.py
-
 from crypting import Crypting
 
 # Initialize the Crypting class
