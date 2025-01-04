@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 from crypting import Crypting as cr
+import cryptography.exceptions
 from database import Database as db
 from database import User as us
 from database import Chatroom as ch
@@ -161,8 +162,11 @@ class UI:
         cr_instance.set_key(ch().hashing(self.key_chatroom))
         self.key_chatroom = ch().hashing(self.key_chatroom)
         for message in messages:
-            decrypted_message = cr_instance.decrypt(message['message'])
-            tk.Label(self.ch, text=decrypted_message).place(x=100, y=y)
+            try:
+                decrypted_message = cr_instance.decrypt(message['message'])
+                tk.Label(self.ch, text=decrypted_message).place(x=100, y=y)
+            except cryptography.exceptions.InvalidTag:
+                tk.Label(self.ch, text="Error decrypting message").place(x=100, y=y)
             y += 25
         tk.Label(self.ch, text='Message').place(x=100, y=100)
         self.message_user = tk.Entry(self.ch)
@@ -183,7 +187,7 @@ class UI:
         encrypted_message = cr_instance.encrypt(message)
         print(encrypted_message + "188")
         db().add_message({'message': encrypted_message, 'chat_room': self.user})
-        messagebox.showinfo('Success', 'Message sent')
+        messagebox.showinfo('Success', cr_instance.decrypt(encrypted_message))
         self.message_user.delete(0, tk.END)
         if self.root is not None and self.root.winfo_exists():
             self.root.destroy()
