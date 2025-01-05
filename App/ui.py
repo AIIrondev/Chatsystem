@@ -149,6 +149,7 @@ class UI:
     def Chat(self):
         if self.root is not None:
             self.root.destroy()
+            self.root = None
         self.ch = tk.Tk()
         self.ch.title('Chat')
         self.ch.geometry('400x400')
@@ -171,10 +172,10 @@ class UI:
             y += 25
         tk.Label(self.ch, text='Message').place(x=100, y=y + 25)
         self.message_user = tk.Entry(self.ch)
-        self.message_user.place(x=175, y=y)
+        self.message_user.place(x=175, y=y + 25)
         tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=y + 50)
-        tk.Button(self.ch, text='Refresh', command=self.Chat).place(x=150, y=y+100)
-        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=y+150)
+        tk.Button(self.ch, text='Refresh', command=self.Chat).place(x=150, y=y+75)
+        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=y+100)
         db().close()
 
     def send_message(self):
