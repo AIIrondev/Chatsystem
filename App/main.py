@@ -1,8 +1,10 @@
 from ui import UI
 from database import Database
 from database import User
+from database import Chatroom
 
 def setup():
+    Chatroom()
     Database()
     User()
 
