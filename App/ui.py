@@ -182,7 +182,7 @@ class UI:
                     message_frame.pack(fill="x", pady=5)
                     message_label = tk.Label(message_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}", wraplength=500)
                     message_label.pack(side="left", anchor="w")
-                    reply_button = tk.Button(message_frame, text="Reply", command=lambda m=message: self.reply_to_message(m))
+                    reply_button = tk.Button(message_frame, text="Reply", command=lambda: self.option_menu(message['_id']))
                     reply_button.pack(side="right", anchor="e")
                 else:
                     print("Message from false chatroom")
@@ -207,7 +207,6 @@ class UI:
         if not message:
             messagebox.showerror('Error', 'Please fill the message')
             return
-
         try:
             cr_instance = cr()
             cr_instance.set_key(ch().hashing(self.key_chatroom))
@@ -220,9 +219,12 @@ class UI:
             self.message_user.delete(0, tk.END)
             self.refresh()
 
-    def reply_to_message(self):
-        print("Replying to message")
-        pass
+    def option_menu(self, message_id):
+        messagebox.askokcancel("Option", "Delete this message", command=lambda: self.delete_message(message_id))
+
+    def delete_message(self, message_id):
+        db().delete_message(message_id)
+        self.refresh()
 
     def close(self):
         self.root.destroy()
