@@ -157,7 +157,6 @@ class UI:
         frame.place(x=20, y=110, width=580, height=200)
         canvas = tk.Canvas(frame)
         v_scrollbar = tk.Scrollbar(frame, orient="vertical", command=canvas.yview)
-        h_scrollbar = tk.Scrollbar(frame, orient="horizontal", command=canvas.xview)
         scrollable_frame = tk.Frame(canvas)
         scrollable_frame.bind(
             "<Configure>",
@@ -167,11 +166,10 @@ class UI:
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        canvas.configure(yscrollcommand=v_scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True)
         v_scrollbar.pack(side="right", fill="y")
-        h_scrollbar.pack(side="bottom", fill="x")
 
         messages = db().get_messages(self.chat_name)
         cr_instance = cr()
@@ -182,9 +180,9 @@ class UI:
                     decrypted_message = cr_instance.decrypt(message["message"])
                     message_frame = tk.Frame(scrollable_frame)
                     message_frame.pack(fill="x", pady=5)
-                    message_label = tk.Label(message_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}")
+                    message_label = tk.Label(message_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}", wraplength=500)
                     message_label.pack(side="left", anchor="w")
-                    reply_button = tk.Button(message_frame, text="Reply", command=self.reply_to_message)
+                    reply_button = tk.Button(message_frame, text="Reply", command=lambda m=message: self.reply_to_message(m))
                     reply_button.pack(side="right", anchor="e")
                 else:
                     print("Message from false chatroom")
