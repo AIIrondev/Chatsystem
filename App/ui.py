@@ -125,7 +125,7 @@ class UI:
         self.key = tk.Entry(self.ec)
         self.key.place(x=150, y=150)
         tk.Button(self.ec, text='Join', command=self.join_chatroom).place(x=150, y=200)
-    
+
     def join_chatroom(self):
         self.chat_name = self.name.get()
         key = self.key.get()
@@ -151,25 +151,42 @@ class UI:
         self.ch.title(self.chat_name)
         self.ch.geometry('600x600')
         self.ch.resizable(True, True)
+
         tk.Label(self.ch, text=f'Welcome {self.user}').place(x=150, y=50)
         tk.Label(self.ch, text='Messages: ').place(x=10, y=75)
-        frame = tk.Frame(self.ch)
-        frame.place(x=20, y=110, width=580, height=200)
-        canvas = tk.Canvas(frame)
-        v_scrollbar = tk.Scrollbar(frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas)
-        scrollable_frame.bind(
+
+        self.frame = tk.Frame(self.ch)
+        self.frame.place(x=20, y=110, width=580, height=200)
+        self.canvas = tk.Canvas(self.frame)
+        self.v_scrollbar = tk.Scrollbar(self.frame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = tk.Frame(self.canvas)
+
+        self.scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
             )
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=v_scrollbar.set)
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=self.v_scrollbar.set)
 
-        canvas.pack(side="left", fill="both", expand=True)
-        v_scrollbar.pack(side="right", fill="y")
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.v_scrollbar.pack(side="right", fill="y")
+
+        tk.Label(self.ch, text='Message').place(x=100, y=325)
+        self.message_user = tk.Entry(self.ch)
+        self.message_user.place(x=175, y=325)
+        tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=350)
+        tk.Button(self.ch, text='Refresh', command=self.refresh).place(x=150, y=375)
+        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=400)
+
+        self.update_messages()
+        db().close()
+
+    def update_messages(self):
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
 
         messages = db().get_messages(self.chat_name)
         cr_instance = cr()
@@ -178,9 +195,13 @@ class UI:
             try:
                 if message["chat_room"] == self.chat_name:
                     decrypted_message = cr_instance.decrypt(message["message"])
-                    message_frame = tk.Frame(scrollable_frame)
+                    message_frame = tk.Frame(self.scrollable_frame)
                     message_frame.pack(fill="x", pady=5)
-                    message_label = tk.Label(message_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}", wraplength=500)
+                    message_label = tk.Label(
+                        message_frame,
+                        text=f"{message['user']} | {decrypted_message} | {message['Date']}",
+                        wraplength=500
+                    )
                     message_label.pack(side="left", anchor="w")
                     reply_button = tk.Button(
                         message_frame,
@@ -188,23 +209,11 @@ class UI:
                         command=lambda msg_id=message['_id']: self.option_menu(msg_id)
                     )
                     reply_button.pack(side="right", anchor="e")
-                else:
-                    print("Message from false chatroom")
-                    continue
             except cryptography.exceptions.InvalidTag:
-                tk.Label(scrollable_frame, text="Error decrypting message").pack(anchor="w")
-
-        tk.Label(self.ch, text='Message').place(x=100, y=325)
-        self.message_user = tk.Entry(self.ch)
-        self.message_user.place(x=175, y=325)
-        tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=350)
-        tk.Button(self.ch, text='Refresh', command=self.refresh).place(x=150, y=375)
-        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=400)
-        db().close()
+                tk.Label(self.scrollable_frame, text="Error decrypting message").pack(anchor="w")
 
     def refresh(self):
-        self.ch.destroy()
-        self.Chat()
+        self.update_messages()
 
     def send_message(self):
         message = self.message_user.get()
@@ -216,7 +225,6 @@ class UI:
             cr_instance.set_key(ch().hashing(self.key_chatroom))
             encrypted_message = cr_instance.encrypt(message)
             db().add_message({'message': encrypted_message, 'chat_room': self.chat_name, 'user': self.user, 'Date': datetime.now().strftime("%Y-%m-%d %H:%M")})
-            messagebox.showinfo('Success', 'Message sent')
         except Exception as e:
             messagebox.showerror('Error', f'Failed to send message: {e}')
         finally:
