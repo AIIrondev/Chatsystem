@@ -158,9 +158,8 @@ class UI:
         messages = db().get_messages(self.user)
         y = 100
         cr_instance = cr()
-        print(self.key_chatroom + "160")
         cr_instance.set_key(ch().hashing(self.key_chatroom))
-        self.key_chatroom = ch().hashing(self.key_chatroom)
+        print(ch().hashing(self.key_chatroom))
         for message in messages:
             try:
                 decrypted_message = cr_instance.decrypt(message['message'])
@@ -168,12 +167,12 @@ class UI:
             except cryptography.exceptions.InvalidTag:
                 tk.Label(self.ch, text="Error decrypting message").place(x=100, y=y)
             y += 25
-        tk.Label(self.ch, text='Message').place(x=100, y=100)
+        tk.Label(self.ch, text='Message').place(x=100, y=y + 25)
         self.message_user = tk.Entry(self.ch)
-        self.message_user.place(x=150, y=100)
-        tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=150)
-        tk.Button(self.ch, text='Refresh', command=self.Chat).place(x=150, y=200)
-        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=250)
+        self.message_user.place(x=175, y=y)
+        tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=y + 50)
+        tk.Button(self.ch, text='Refresh', command=self.Chat).place(x=150, y=y+100)
+        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=y+150)
         db().close()
 
     def send_message(self):
@@ -183,14 +182,12 @@ class UI:
             return
         cr_instance = cr()
         cr_instance.set_key(ch().hashing(self.key_chatroom))
-        print(self.key_chatroom + "186")
+        print(ch().hashing(self.key_chatroom))
         encrypted_message = cr_instance.encrypt(message)
-        print(encrypted_message + "188")
         db().add_message({'message': encrypted_message, 'chat_room': self.user})
-        messagebox.showinfo('Success', cr_instance.decrypt(encrypted_message))
-        self.message_user.delete(0, tk.END)
-        if self.root is not None and self.root.winfo_exists():
-            self.root.destroy()
+        # Right decryption
+        # messagebox.showinfo('Success', cr_instance.decrypt(encrypted_message))
+        # self.message_user.delete(0, tk.END)
         self.Chat()
         db().close()
 

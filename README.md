@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [Target](#target)
 - [Server](#server)
   - [Database](#database)
 - [Client](#client)
@@ -9,6 +10,10 @@
 - [Usage](#usage)
 - [License](#license)
 - [Contributing](#contributing)
+
+## Target
+
+The Target of the Repository is the easy deployment and managment of a Chatsystem for every one.
 
 ## Server
 

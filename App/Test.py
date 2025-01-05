@@ -20,3 +20,9 @@ if original_message == decrypted_message:
     print("Success: Decrypted message matches the original.")
 else:
     print("Error: Decrypted message does not match.")
+
+
+#Encryption Key: Password
+# e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a
+#Decryption Key: Password 
+# e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a
