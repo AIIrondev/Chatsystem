@@ -130,12 +130,12 @@ class UI:
         tk.Button(self.ec, text='Join', command=self.join_chatroom).place(x=150, y=200)
     
     def join_chatroom(self):
-        name = self.name.get()
+        self.chat_name = self.name.get()
         key = self.key.get()
-        if not name or not key:
+        if not self.chat_name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        chatroom = ch().get_chatroom(name)
+        chatroom = ch().get_chatroom(self.chat_name)
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
@@ -162,8 +162,10 @@ class UI:
         print(ch().hashing(self.key_chatroom))
         for message in messages:
             try:
-                decrypted_message = cr_instance.decrypt(message['message'])
-                tk.Label(self.ch, text=decrypted_message).place(x=100, y=y)
+                if message["chat_room"] == self.chat_name:
+                    tk.Label(self.ch, text=cr_instance.decrypt(message["message"])).place(x=100, y=y)
+                else:
+                    continue
             except cryptography.exceptions.InvalidTag:
                 tk.Label(self.ch, text="Error decrypting message").place(x=100, y=y)
             y += 25
