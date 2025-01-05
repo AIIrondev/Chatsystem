@@ -182,7 +182,7 @@ class UI:
                     message_frame.pack(fill="x", pady=5)
                     message_label = tk.Label(message_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}", wraplength=500)
                     message_label.pack(side="left", anchor="w")
-                    reply_button = tk.Button(message_frame, text="Reply", command=lambda: self.option_menu(message['_id']))
+                    reply_button = tk.Button(message_frame, text="...", command=lambda: self.option_menu(message['_id']))
                     reply_button.pack(side="right", anchor="e")
                 else:
                     print("Message from false chatroom")
