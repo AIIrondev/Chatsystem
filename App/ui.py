@@ -5,7 +5,7 @@ import cryptography.exceptions
 from database import Database as db
 from database import User as us
 from database import Chatroom as ch
-import datetime
+from datetime import datetime
 
 class UI:
     def run_main_loop(self):
@@ -149,14 +149,15 @@ class UI:
             self.root = None
         self.ch = tk.Tk()
         self.ch.title(self.chat_name)
-        self.ch.geometry('600x500')
+        self.ch.geometry('600x600')
         self.ch.resizable(True, True)
         tk.Label(self.ch, text=f'Welcome {self.user}').place(x=150, y=50)
         tk.Label(self.ch, text='Messages: ').place(x=10, y=75)
         frame = tk.Frame(self.ch)
-        frame.place(x=20, y=110, width=400, height=200)
+        frame.place(x=20, y=110, width=580, height=200)
         canvas = tk.Canvas(frame)
-        scrollbar = tk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+        v_scrollbar = tk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+        h_scrollbar = tk.Scrollbar(frame, orient="horizontal", command=canvas.xview)
         scrollable_frame = tk.Frame(canvas)
         scrollable_frame.bind(
             "<Configure>",
@@ -166,9 +167,11 @@ class UI:
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
         canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        v_scrollbar.pack(side="right", fill="y")
+        h_scrollbar.pack(side="bottom", fill="x")
 
         messages = db().get_messages(self.chat_name)
         cr_instance = cr()
@@ -181,7 +184,7 @@ class UI:
                     message_frame.pack(fill="x", pady=5)
                     message_label = tk.Label(message_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}")
                     message_label.pack(side="left", anchor="w")
-                    reply_button = tk.Button(message_frame, text="Reply", command=lambda m=message: self.reply_to_message(m))
+                    reply_button = tk.Button(message_frame, text="Reply", command=self.reply_to_message)
                     reply_button.pack(side="right", anchor="e")
                 else:
                     print("Message from false chatroom")
@@ -211,15 +214,16 @@ class UI:
             cr_instance = cr()
             cr_instance.set_key(ch().hashing(self.key_chatroom))
             encrypted_message = cr_instance.encrypt(message)
-            db().add_message({'message': encrypted_message, 'chat_room': self.chat_name, 'user': self.user, 'Date': datetime.datetime.now()})
+            db().add_message({'message': encrypted_message, 'chat_room': self.chat_name, 'user': self.user, 'Date': datetime.now().strftime("%Y-%m-%d %H:%M")})
+            messagebox.showinfo('Success', 'Message sent')
         except Exception as e:
             messagebox.showerror('Error', f'Failed to send message: {e}')
         finally:
             self.message_user.delete(0, tk.END)
             self.refresh()
 
-    def reply_to_message(self, message):
-        print(f"Replying to message: {message}")
+    def reply_to_message(self):
+        print("Replying to message")
         pass
 
     def close(self):
