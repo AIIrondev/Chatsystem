@@ -154,7 +154,7 @@ class UI:
         tk.Label(self.ch, text=f'Welcome {self.user}').place(x=150, y=50)
         tk.Label(self.ch, text='Messages: ').place(x=10, y=75)
         frame = tk.Frame(self.ch)
-        frame.place(x=20, y=110, width=300, height=200)
+        frame.place(x=20, y=110, width=400, height=200)
         canvas = tk.Canvas(frame)
         scrollbar = tk.Scrollbar(frame, orient="vertical", command=canvas.yview)
         scrollable_frame = tk.Frame(canvas)
@@ -175,12 +175,13 @@ class UI:
         cr_instance.set_key(ch().hashing(self.key_chatroom))
         for message in messages:
             try:
-                print(message)
                 if message["chat_room"] == self.chat_name:
                     decrypted_message = cr_instance.decrypt(message["message"])
-                    message_label = tk.Label(scrollable_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}")
+                    message_frame = tk.Frame(scrollable_frame)
+                    message_frame.pack(fill="x", pady=5)
+                    message_label = tk.Label(message_frame, text=f"{message['user']} | {decrypted_message} | {message['Date']}")
                     message_label.pack(side="left", anchor="w")
-                    reply_button = tk.Button(scrollable_frame, text="Reply", command=lambda m=message: self.reply_to_message(m))
+                    reply_button = tk.Button(message_frame, text="Reply", command=lambda m=message: self.reply_to_message(m))
                     reply_button.pack(side="right", anchor="e")
                 else:
                     print("Message from false chatroom")
@@ -205,14 +206,21 @@ class UI:
         if not message:
             messagebox.showerror('Error', 'Please fill the message')
             return
-        cr_instance = cr()
-        cr_instance.set_key(ch().hashing(self.key_chatroom))
-        encrypted_message = cr_instance.encrypt(message)
-        db().add_message({'message': encrypted_message, 'chat_room': self.chat_name, 'user': self.user, 'Date': datetime.datetime.now()})
-        self.message_user.delete(0, tk.END)
-        self.ch.destroy()
-        self.Chat()
-        db().close()
+
+        try:
+            cr_instance = cr()
+            cr_instance.set_key(ch().hashing(self.key_chatroom))
+            encrypted_message = cr_instance.encrypt(message)
+            db().add_message({'message': encrypted_message, 'chat_room': self.chat_name, 'user': self.user, 'Date': datetime.datetime.now()})
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to send message: {e}')
+        finally:
+            self.message_user.delete(0, tk.END)
+            self.refresh()
+
+    def reply_to_message(self, message):
+        print(f"Replying to message: {message}")
+        pass
 
     def close(self):
         self.root.destroy()
