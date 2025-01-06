@@ -9,7 +9,6 @@ from datetime import datetime
 
 class UI:
     def run_main_loop(self):
-        self.ch = None
         if self.ch is not None:
             self.ch.destroy()
         self.root = tk.Tk()
@@ -43,7 +42,7 @@ class UI:
         if not username or not password:
             messagebox.showerror('Error', 'Please fill all the fields or register')
             return
-        user = us().check_nm_pwd(username, password)
+        user = us.check_nm_pwd(username, password)
         if user:
             self.user = user['Username']
             self.reg.destroy()
@@ -57,13 +56,13 @@ class UI:
         if not username or not password:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        user = us().get_user(username)
+        user = us.get_user(username)
         if user:
             messagebox.showerror('Error', 'User already exists')
             return
-        if not us().check_password_strength(password):
+        if not us.check_password_strength(password):
             return
-        us().add_user(username, password)
+        us.add_user(username, password)
         self.user = username
         self.reg.destroy()
         self.run_main_loop()
@@ -102,7 +101,7 @@ class UI:
         if not name or not key:
             messagebox.showerror('Error', 'Please fill all the fields')
             return
-        ch().add_chatroom(name, ch().hashing(key))
+        ch.add_chatroom(name, ch.hashing(key))
         messagebox.showinfo('Success', 'Chatroom created')
         cr_instance = cr()
         cr_instance.set_key(ch().hashing(key))
@@ -136,7 +135,7 @@ class UI:
         if not chatroom:
             messagebox.showerror('Error', 'Chatroom does not exist')
             return
-        if chatroom['key'] != ch().hashing(key):
+        if chatroom['key'] != ch.hashing(key):
             messagebox.showerror('Error', 'Invalid key')
             return
         self.key_chatroom = key
@@ -180,9 +179,11 @@ class UI:
         tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=350)
         tk.Button(self.ch, text='Refresh', command=self.refresh).place(x=150, y=375)
         tk.Button(self.ch, text='Main Menu', command=self.back()).place(x=150, y=400)
-
-        self.update_messages()
-        db().close()
+        tk.Button(self.ch, text='Main Menu', command=self.back).place(x=150, y=400)
+        try:
+            self.update_messages()
+        finally:
+            db().close()
 
     def back(self):
         self.ch.destroy()
