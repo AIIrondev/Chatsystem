@@ -179,10 +179,14 @@ class UI:
         self.message_user.place(x=175, y=325)
         tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=350)
         tk.Button(self.ch, text='Refresh', command=self.refresh).place(x=150, y=375)
-        tk.Button(self.ch, text='Main Menu', command=self.run_main_loop).place(x=150, y=400)
+        tk.Button(self.ch, text='Main Menu', command=self.back()).place(x=150, y=400)
 
         self.update_messages()
         db().close()
+
+    def back(self):
+        self.ch.destroy()
+        self.run_main_loop()
 
     def update_messages(self):
         for widget in self.scrollable_frame.winfo_children():
