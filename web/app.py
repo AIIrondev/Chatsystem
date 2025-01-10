@@ -23,6 +23,7 @@ def login():
         if not username or not password:
             flash('Please fill all fields', 'error')
             return redirect(url_for('login'))
+        print("Debug:", username, password)
         user = us.check_nm_pwd(username, password)
         if user:
             session['username'] = username
