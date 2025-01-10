@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Main Menu{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h2>Welcome to the Chat App</h2>
+    <a class="btn btn-success my-3" href="{{ url_for('new_chatroom') }}">Create New Chatroom</a>
+    <a class="btn btn-primary my-3" href="{{ url_for('enter_chatroom') }}">Join Chatroom</a>
+    <a class="btn btn-danger my-3" href="{{ url_for('logout') }}">Logout</a>
+</div>
+{% endblock %}

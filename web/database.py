@@ -14,8 +14,8 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
     def add_message(self, message):
         self.messages.insert_one(message)
 
-    def get_messages(self):
-        return self.messages.find()
+    def get_messages(self, chat_room):
+        return self.messages.find({'chat_room': chat_room})
 
     def get_message(self, message_id):
         return self.messages.find_one({'_id': ObjectId(message_id)})
@@ -26,7 +26,35 @@ class Database: # chat database class, preset: (_id, name, message, chat_room)
     def update_message(self, message_id, message):
         self.messages.update_one({'_id': ObjectId(message_id)}, {'$set': message})
 
-    def __del__(self):
+    def close(self):
+        self.client.close()
+
+
+class Chatroom:
+    def __init__(self):
+        self.client = MongoClient('localhost', 27017)
+        self.db = self.client['Chatsystem']
+        self.chatrooms = self.db['chatrooms']
+        self.chatrooms.create_index('name', unique=True)
+
+    def hashing(self, key):
+        return hashlib.sha256(key.encode()).hexdigest()
+
+    def check_key(self, key):
+        return self.chatrooms.find_one({'key': key})
+
+    def add_chatroom(self, name, key):
+        try:
+            self.chatrooms.insert_one({'name': name, 'key': key})
+            return True
+        except pymongo.errors.DuplicateKeyError:
+            messagebox.showerror('Error', 'Chatroom already exists')
+            return False
+
+    def get_chatroom(self, name):
+        return self.chatrooms.find_one({'name': name})
+
+    def close(self):
         self.client.close()
 
 class User:

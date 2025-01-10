@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Chatroom{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center">{{ chatroom_name }}</h2>
+        <div class="border rounded p-3 mb-3" style="height: 400px; overflow-y: scroll;">
+            {% for message in messages %}
+                <div class="mb-2">
+                    <strong>{{ message.user }}</strong>: {{ message.content }} <small class="text-muted">{{ message.date }}</small>
+                </div>
+            {% endfor %}
+        </div>
+        <form method="POST" action="{{ url_for('send_message', chatroom_name=chatroom_name) }}">
+            <div class="mb-3">
+                <label for="message" class="form-label">Message</label>
+                <input type="text" class="form-control" id="message" name="message" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
