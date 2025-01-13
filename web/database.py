@@ -37,7 +37,8 @@ class Chatroom:
         self.chatrooms = self.db['chatrooms']
         self.chatrooms.create_index('name', unique=True)
 
-    def hashing(self, key):
+    @staticmethod
+    def hashing(key):
         return hashlib.sha256(key.encode()).hexdigest()
 
     def check_key(self, key):
@@ -70,11 +71,20 @@ class User:
             return False
         return True
 
-    def hashing(self, password):
+    @staticmethod
+    def hashing(password):
         return hashlib.sha512(password.encode()).hexdigest()
 
-    def check_nm_pwd(self, username, password):
-        return self.users.find_one({'Username': username, 'Password': self.hashing(password)})
+    @staticmethod
+    def check_nm_pwd(username, password):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        users = db['users']
+        hashed_password = hashlib.sha512(password.encode()).hexdigest()
+        user = users.find_one({'Username': username, 'Password': hashed_password})
+        client.close()
+        return user
+
     
     def add_user(self, username, password):
         if not self.check_password_strength(password):

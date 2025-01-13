@@ -24,7 +24,10 @@ def login():
             flash('Please fill all fields', 'error')
             return redirect(url_for('login'))
         print("Debug:", username, password)
-        user = us.check_nm_pwd(username, password)
+        
+        user_instance = us()
+        user = user_instance.check_nm_pwd(username, password)
+
         if user:
             session['username'] = username
             return redirect(url_for('home'))
@@ -66,32 +69,41 @@ def new_chatroom():
         if not name or not key:
             flash('Please fill all fields', 'error')
             return redirect(url_for('new_chatroom'))
-        ch.add_chatroom(name, ch.hashing(key))
+        hashed_key = ch.hashing(key)
+        ch.add_chatroom(name, hashed_key)
+
         cr_instance = cr()
-        cr_instance.set_key(ch.hashing(key))
+        cr_instance.set_key(hashed_key)
         message = cr_instance.encrypt('Welcome to the chatroom')
         db().add_message({'message': message, 'chat_room': name})
         flash('Chatroom created successfully', 'success')
         return redirect(url_for('home'))
     return render_template('new_chatroom.html')
 
+
 @app.route('/enter_chatroom', methods=['GET', 'POST'])
 def enter_chatroom():
     if 'username' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        chat_name = request.form['name']
-        key = request.form['key']
+        chat_name = request.form.get('chatroom_name')
+        key = request.form.get('chatroom_key')
+
         if not chat_name or not key:
             flash('Please fill all fields', 'error')
             return redirect(url_for('enter_chatroom'))
-        chatroom = ch().get_chatroom(chat_name)
+
+        chatroom_instance = ch()
+        chatroom = chatroom_instance.get_chatroom(chat_name)
+
         if not chatroom:
             flash('Chatroom does not exist', 'error')
             return redirect(url_for('enter_chatroom'))
-        if chatroom['key'] != ch.hashing(key):
+
+        if chatroom['key'] != chatroom_instance.hashing(key):
             flash('Invalid key', 'error')
             return redirect(url_for('enter_chatroom'))
+
         session['chat_name'] = chat_name
         session['chat_key'] = key
         return redirect(url_for('chat'))
@@ -103,21 +115,28 @@ def chat():
         return redirect(url_for('login'))
     chat_name = session['chat_name']
     key = session['chat_key']
+
+    cr_instance = cr()
+    hashed_key = ch.hashing(key)
+    cr_instance.set_key(hashed_key)
+
     if request.method == 'POST':
         message = request.form['message']
         if not message:
             flash('Message cannot be empty', 'error')
             return redirect(url_for('chat'))
         try:
-            cr_instance = cr()
-            cr_instance.set_key(ch.hashing(key))
             encrypted_message = cr_instance.encrypt(message)
-            db().add_message({'message': encrypted_message, 'chat_room': chat_name, 'user': session['username'], 'Date': datetime.now().strftime("%Y-%m-%d %H:%M")})
+            db().add_message({
+                'message': encrypted_message,
+                'chat_room': chat_name,
+                'user': session['username'],
+                'Date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+            })
         except Exception as e:
             flash(f'Failed to send message: {e}', 'error')
+
     messages = db().get_messages(chat_name)
-    cr_instance = cr()
-    cr_instance.set_key(ch.hashing(key))
     decrypted_messages = []
     for message in messages:
         try:
@@ -126,11 +145,42 @@ def chat():
                 decrypted_messages.append({
                     'user': message['user'],
                     'content': decrypted_message,
-                    'date': message['Date']
+                    'date': message['Date'],
                 })
         except InvalidTag:
             decrypted_messages.append({'user': 'System', 'content': 'Error decrypting message', 'date': ''})
     return render_template('chat.html', messages=decrypted_messages, chat_name=chat_name)
+
+@app.route('/send_message/<chatroom_name>', methods=['POST'])
+def send_message(chatroom_name):
+    if 'username' not in session or 'chat_name' not in session:
+        return redirect(url_for('login'))
+    
+    message = request.form['message']
+    key = session.get('chat_key')
+    
+    if not message:
+        flash('Message cannot be empty', 'error')
+        return redirect(url_for('chat'))
+
+    try:
+        cr_instance = cr()
+        hashed_key = ch.hashing(key)
+        cr_instance.set_key(hashed_key)
+        encrypted_message = cr_instance.encrypt(message)
+        
+        db().add_message({
+            'message': encrypted_message,
+            'chat_room': chatroom_name,
+            'user': session['username'],
+            'Date': datetime.now().strftime("%Y-%m-%d %H:%M"),
+        })
+        flash('Message sent successfully', 'success')
+    except Exception as e:
+        flash(f'Failed to send message: {e}', 'error')
+
+    return redirect(url_for('chat', chat_name=chatroom_name))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

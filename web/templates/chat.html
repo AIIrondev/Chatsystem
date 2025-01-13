@@ -13,12 +13,9 @@
                 </div>
             {% endfor %}
         </div>
-        <form method="POST" action="{{ url_for('send_message', chatroom_name=chatroom_name) }}">
-            <div class="mb-3">
-                <label for="message" class="form-label">Message</label>
-                <input type="text" class="form-control" id="message" name="message" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Send</button>
+        <form method="POST" action="{{ url_for('send_message', chatroom_name=chat_name) }}">
+            <input type="text" name="message" placeholder="Enter your message">
+            <button type="submit">Send</button>
         </form>
     </div>
 </div>
