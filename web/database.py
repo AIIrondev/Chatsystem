@@ -41,12 +41,24 @@ class Chatroom:
     def hashing(key):
         return hashlib.sha256(key.encode()).hexdigest()
 
-    def check_key(self, key):
-        return self.chatrooms.find_one({'key': key})
+    @staticmethod
+    def check_key(key):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        chatrooms = db['chatrooms']
+        chatrooms.create_index('name', unique=True)
+        chatroom = chatrooms.find_one({'key': key})
+        client.close()
+        return chatroom
 
-    def add_chatroom(self, name, key):
+    @staticmethod
+    def add_chatroom(name, key):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        chatrooms = db['chatrooms']
+        chatrooms.create_index('name', unique=True)
         try:
-            self.chatrooms.insert_one({'name': name, 'key': key})
+            chatrooms.insert_one({'name': name, 'key': key})
             return True
         except pymongo.errors.DuplicateKeyError:
             messagebox.showerror('Error', 'Chatroom already exists')
@@ -65,7 +77,8 @@ class User:
         self.users = self.db['users']
         self.users.create_index('Username', unique=True)
 
-    def check_password_strength(self, password):
+    @staticmethod
+    def check_password_strength(password):
         if len(password) < 12:
             messagebox.showerror('Critical', 'Password is too weak (12 characters required)\n youre request has been denied')
             return False
@@ -85,7 +98,7 @@ class User:
         client.close()
         return user
 
-    @staticmethod    
+    @staticmethod
     def add_user(username, password):
         client = MongoClient('localhost', 27017)
         db = client['Chatsystem']
@@ -96,8 +109,14 @@ class User:
         client.close()
         return True
 
-    def get_user(self, username):
-        return self.users.find_one({'Username': username})
+    @staticmethod
+    def get_user(username):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        users = db['users']
+        users_return = users.find_one({'Username': username})
+        client.close()
+        return users_return
 
     def __str__(self):
         return self.username
