@@ -4,39 +4,56 @@ from bson.objectid import ObjectId
 import hashlib
 from tkinter import messagebox
 
-class Database: # chat database class, preset: (_id, name, message, chat_room)
-    def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client['Chatsystem']
-        self.messages = self.db['messages']
-        self.messages.create_index('chat_room')
+class Database:
+    @staticmethod
+    def add_message(message):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        messages = db['messages']
+        messages.create_index('chat_room')
+        messages.insert_one(message)
+        client.close()
 
-    def add_message(self, message):
-        self.messages.insert_one(message)
+    @staticmethod
+    def get_messages(chat_room):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        messages = db['messages']
+        messages.create_index('chat_room')
+        messages_return = messages.find({'chat_room': chat_room})
+        client.close()
+        return messages_return
 
-    def get_messages(self, chat_room):
-        return self.messages.find({'chat_room': chat_room})
-
+    @staticmethod
     def get_message(self, message_id):
-        return self.messages.find_one({'_id': ObjectId(message_id)})
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        messages = db['messages']
+        messages.create_index('chat_room')
+        message_return = messages.find_one({'_id': ObjectId(message_id)})
+        client.close()
+        return message_return
 
-    def delete_message(self, message_id):
-        self.messages.delete_one({'_id': ObjectId(message_id)})
+    @staticmethod
+    def delete_message(message_id):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        messages = db['messages']
+        messages.create_index('chat_room')
+        messages.delete_one({'_id': ObjectId(message_id)})
+        client.close()
 
-    def update_message(self, message_id, message):
-        self.messages.update_one({'_id': ObjectId(message_id)}, {'$set': message})
-
-    def close(self):
-        self.client.close()
+    @staticmethod
+    def update_message(message_id, message):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        messages = db['messages']
+        messages.create_index('chat_room')
+        messages.update_one({'_id': ObjectId(message_id)}, {'$set': message})
+        client.close()
 
 
 class Chatroom:
-    def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client['Chatsystem']
-        self.chatrooms = self.db['chatrooms']
-        self.chatrooms.create_index('name', unique=True)
-
     @staticmethod
     def hashing(key):
         return hashlib.sha256(key.encode()).hexdigest()
@@ -59,24 +76,25 @@ class Chatroom:
         chatrooms.create_index('name', unique=True)
         try:
             chatrooms.insert_one({'name': name, 'key': key})
+            client.close()
             return True
         except pymongo.errors.DuplicateKeyError:
             messagebox.showerror('Error', 'Chatroom already exists')
+            client.close()
             return False
 
-    def get_chatroom(self, name):
-        return self.chatrooms.find_one({'name': name})
+    @staticmethod
+    def get_chatroom(name):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        chatrooms = db['chatrooms']
+        chatrooms.create_index('name', unique=True)
+        chat_room = chatrooms.find_one({'name': name})
+        client.close()
+        return chat_room
 
-    def close(self):
-        self.client.close()
 
 class User:
-    def __init__(self):
-        self.client = MongoClient('localhost', 27017)
-        self.db = self.client['Chatsystem']
-        self.users = self.db['users']
-        self.users.create_index('Username', unique=True)
-
     @staticmethod
     def check_password_strength(password):
         if len(password) < 12:
@@ -117,6 +135,3 @@ class User:
         users_return = users.find_one({'Username': username})
         client.close()
         return users_return
-
-    def __str__(self):
-        return self.username
