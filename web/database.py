@@ -85,11 +85,15 @@ class User:
         client.close()
         return user
 
-    
-    def add_user(self, username, password):
-        if not self.check_password_strength(password):
+    @staticmethod    
+    def add_user(username, password):
+        client = MongoClient('localhost', 27017)
+        db = client['Chatsystem']
+        users = db['users']
+        if not User.check_password_strength(password):
             return False
-        self.users.insert_one({'Username': username, 'Password': self.hashing(password)})
+        users.insert_one({'Username': username, 'Password': User.hashing(password)})
+        client.close()
         return True
 
     def get_user(self, username):
