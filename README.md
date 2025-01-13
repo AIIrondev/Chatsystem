@@ -13,7 +13,7 @@
 
 ## Target
 
-The Target of the Repository is the easy deployment and managment of a Chatsystem for every one.
+The Target of the Repository is the easy deployment and managment of a Chatsystem for every one. So you can as a Client, Just start a server or an old Computer that you
 
 ## Server
 
