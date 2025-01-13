@@ -4,7 +4,9 @@
 
 - [Target](#target)
 - [Server](#server)
-  - [Database](#database)
+  -[Linux](#linux)
+  -[Windows](#windows)
+- [Database](#database)
 - [Client](#client)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -13,11 +15,18 @@
 
 ## Target
 
-The Target of the Repository is the easy deployment and managment of a Chatsystem for every one. So you can as a Client, Just start a server or an old Computer that you
+The Target of the Repository is the easy deployment and managment of a Chatsystem for every one. So you can as a Client, just start a server or an old Computer that you dont need any more snd just fire the software up, configure the Ip and you are ready to go.
 
 ## Server
 
+### Linux
+
+### Windows
+
 ### Database
+
+Mondo DB is the Database Software that I use for this Project because of the good compatability with Linux and Windows.
+For more Information see [Docs](docs/Mongodb.md) or [Python Implementation](docs/database_docs.md).
 
 ## Client
 
