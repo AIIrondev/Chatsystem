@@ -4,10 +4,13 @@
 
 - [Target](#target)
 - [Server](#server)
-  -[Linux](#linux)
-  -[Windows](#windows)
-- [Database](#database)
+  - [Linux](#linux)
+  - [Windows](#windows)
+  - [Database](#database)
+  - [Website](#website-hosting)
 - [Client](#client)
+  - [Website](#website)
+  - [App](#app)
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
@@ -19,6 +22,8 @@ The Target of the Repository is the easy deployment and managment of a Chatsyste
 
 ## Server
 
+Here I will give you a overview of the Server Options you have to deploy the Chatsystem Database.
+
 ### Linux
 
 ### Windows
@@ -28,9 +33,19 @@ The Target of the Repository is the easy deployment and managment of a Chatsyste
 Mondo DB is the Database Software that I use for this Project because of the good compatability with Linux and Windows.
 For more Information see [Docs](docs/Mongodb.md) or [Python Implementation](docs/database_docs.md).
 
+### Website Hosting
+
 ## Client
 
+### Website
+
+### App
+
 ## Installation
+
+### Linux Installation
+
+### Windows Installation
 
 ## Usage
 
