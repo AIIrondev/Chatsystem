@@ -39,8 +39,6 @@ For more Information see [Docs](docs/Mongodb.md) or [Python Implementation](docs
 
 ### Website
 
-### App
-
 ## Installation
 
 ### Linux Installation
