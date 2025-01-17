@@ -5,6 +5,13 @@ import hashlib
 from tkinter import messagebox
 
 class Database:
+    def __init__(self):
+        self.client = MongoClient('localhost', 27017)
+        self.db = self.client['Chatsystem']
+        self.messages = self.db['messages']
+        self.chatrooms = self.db['chatrooms']
+        self.users = self.db['users']
+    
     @staticmethod
     def add_message(message):
         client = MongoClient('localhost', 27017)
@@ -21,11 +28,10 @@ class Database:
         messages = db['messages']
         messages.create_index('chat_room')
         messages_return = messages.find({'chat_room': chat_room})
-        client.close()
         return messages_return
 
     @staticmethod
-    def get_message(self, message_id):
+    def get_message(message_id):
         client = MongoClient('localhost', 27017)
         db = client['Chatsystem']
         messages = db['messages']
@@ -52,8 +58,15 @@ class Database:
         messages.update_one({'_id': ObjectId(message_id)}, {'$set': message})
         client.close()
 
+    def __del__(self):
+        self.client.close()
 
 class Chatroom:
+    def __init__(self):
+        self.client = MongoClient('localhost', 27017)
+        self.db = self.client['Chatsystem']
+        self.chatrooms = self.db['chatrooms']
+
     @staticmethod
     def hashing(key):
         return hashlib.sha256(key.encode()).hexdigest()
@@ -95,6 +108,11 @@ class Chatroom:
 
 
 class User:
+    def __init__(self):
+        self.client = MongoClient('localhost', 27017)
+        self.db = self.client['Chatsystem']
+        self.users = self.db['users']
+
     @staticmethod
     def check_password_strength(password):
         if len(password) < 12:
