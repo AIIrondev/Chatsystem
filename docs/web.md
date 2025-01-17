@@ -6,19 +6,23 @@ This is a simple web application built using Flask that includes a chat box func
 
 ```
 website
-├── app
-│   ├── __init__.py
-│   ├── routes.py
-│   └── templates
-│       └── index.html
+├── templates
+│   ├── base.html
+|   ├── chat.html
+|   ├── enter_chatroom.html
+|   ├── login.html
+|   ├── main.html
+|   ├── new_chatroom.html
+|   └── register.html
 ├── static
 │   ├── css
 │   │   └── styles.css
 │   └── js
 │       └── scripts.js
 ├── app.py
-├── requirements.txt
-└── README.md
+├── crypting.py
+├── database.py
+└── requirements.txt
 ```
 
 ## Setup Instructions
