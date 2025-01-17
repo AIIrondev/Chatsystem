@@ -37,7 +37,11 @@ For more Information see [Docs](docs/Mongodb.md) or [Python Implementation](docs
 
 ## Client
 
+The clients will interact with the MongoDB server for loging in, generating a Chatroom, writing mesages and join Chatrooms.
+
 ### Website
+
+The website will be the most used client because of the better security. For more information read the [WEB](docs/web.md)
 
 ## Installation
 
@@ -47,14 +51,16 @@ For more Information see [Docs](docs/Mongodb.md) or [Python Implementation](docs
 
 ## Usage
 
+For the correct usage please read all of the docs or the User Guide.
+
 ## Security
 
 The security of the application is very important. The following are some of the security measures that have been implemented:
 
 - **End to End Encryption**: The messages are encrypted before they are sent to the server. The server does not have access to the encryption keys, so it cannot decrypt the messages. This ensures that even if the server is compromised, the messages cannot be read by an attacker. [Read more](docs/CRYPT.md)
 
+- **No SQL Database**: The Database is a no SQL DB and will 
+
 ## License
 
 This is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for details.
-
-## Contributing

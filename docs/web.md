@@ -1,11 +1,11 @@
-# My Python Web App
+# Website Client
 
 This is a simple web application built using Flask that includes a chat box functionality. Users can send and receive messages in real-time.
 
 ## Project Structure
 
 ```
-my-python-web-app
+website
 ├── app
 │   ├── __init__.py
 │   ├── routes.py
@@ -26,7 +26,7 @@ my-python-web-app
 1. **Clone the repository:**
    ```
    git clone <repository-url>
-   cd my-python-web-app
+   cd website
    ```
 
 2. **Create a virtual environment:**
