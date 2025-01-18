@@ -4,12 +4,12 @@ app = Flask(__name__)
 
 @app.route('/login', methods=['POST'])
 def login():
-    # Handle client connection logic
+    # Handle client login logic
     pass
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    # Handle client disconnection logic
+    # Handle client logout logic
     pass
 
 @app.route('/send_message', methods=['POST'])
