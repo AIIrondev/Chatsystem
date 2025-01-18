@@ -64,8 +64,8 @@ def new_chatroom():
     if 'username' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        name = request.form['name']
-        key = request.form['key']
+        name = request.form['chatroom_name']
+        key = request.form['chatroom_key']
         if not name or not key:
             flash('Please fill all fields', 'error')
             return redirect(url_for('new_chatroom'))
