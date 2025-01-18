@@ -19,8 +19,7 @@ def login(username, password): # TODO: password will be encrypted by the user
 
 @app.route('/logout', methods=['POST'])
 def logout():
-    # Handle client logout logic
-    pass
+    return jsonify({'success': 'User logged out'})
 
 @app.route('/register', methods=['POST'])
 def register(username, password): # TODO: password will be encrypted by the user
