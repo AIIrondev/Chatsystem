@@ -8,8 +8,9 @@ from cryptography.exceptions import InvalidTag
 import os
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'
 
-with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'api.conf'), 'r') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", 'conf', 'website.conf'), 'r') as f:
     api_conf = f.read().splitlines()
     host = api_conf[0].split('=')[1]
     port = api_conf[1].split('=')[1]
@@ -190,4 +191,4 @@ def send_message(chatroom_name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host=host, port=port, debug=True)
