@@ -8,7 +8,6 @@ from cryptography.exceptions import InvalidTag
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
 
 with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'api.conf'), 'r') as f:
     api_conf = f.read().splitlines()
