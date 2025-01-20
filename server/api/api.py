@@ -8,12 +8,11 @@ from crypting import Crypting as cr
 import os
 app = Flask(__name__)
 
-with open(os.path.join(os.path.dirname(__file__), 'api.conf'), 'r') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'api.conf'), 'r') as f:
     api_conf = f.read().splitlines()
-    api_conf = [i.split('=') for i in api_conf]
-    host = api_conf[0]
-    port = api_conf[1]
-    __version__ = api_conf[2]
+    host = api_conf[0].split('=')[1]
+    port = api_conf[1].split('=')[1]
+    __version__ = api_conf[2].split('=')[1]
     f.close()
 
 @app.route('/login', methods=['POST'])
@@ -94,4 +93,4 @@ def test_connection():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=4999)
+    app.run(host=host, port=port)
