@@ -5,7 +5,16 @@ from database import Chatroom as ch
 from database import Database as db
 from datetime import datetime
 from crypting import Crypting as cr
+import os
 app = Flask(__name__)
+
+with open(os.path.join(os.path.dirname(__file__), 'api.conf'), 'r') as f:
+    api_conf = f.read().splitlines()
+    api_conf = [i.split('=') for i in api_conf]
+    host = api_conf[0]
+    port = api_conf[1]
+    __version__ = api_conf[2]
+    f.close()
 
 @app.route('/login', methods=['POST'])
 def login(username, password): # TODO: password will be encrypted by the user
