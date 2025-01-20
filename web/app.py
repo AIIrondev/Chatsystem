@@ -8,13 +8,13 @@ from cryptography.exceptions import InvalidTag
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
 
 with open(os.path.join(os.path.dirname(__file__), "..", 'conf', 'website.conf'), 'r') as f:
     api_conf = f.read().splitlines()
     host = api_conf[0].split('=')[1]
     port = api_conf[1].split('=')[1]
     __version__ = api_conf[2].split('=')[1]
+    app.secret_key = str(api_conf[3].split('=')[1])
     f.close()
 
 @app.route('/')
