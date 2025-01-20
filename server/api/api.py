@@ -63,11 +63,6 @@ def create_chatroom(name, key):
     ch.add_chatroom(name, ch.hashing(key))
     return jsonify({'success': 'Chatroom created'})
 
-@app.route('/list_chatrooms', methods=['GET'])
-def list_chatrooms():
-    chatrooms = ch.get_chatrooms()
-    return jsonify({'chatrooms': chatrooms})
-
 @app.route('/join_chatroom', methods=['POST'])
 def join_chatroom(chat_name, key):
     if not chat_name or not key:
@@ -78,6 +73,16 @@ def join_chatroom(chat_name, key):
     if chatroom['key'] != ch.hashing(key):
         return jsonify({'error': 'Invalid key'})
     return jsonify({'success': 'Chatroom joined'})
+
+@app.route('/list_chatrooms', methods=['GET'])
+def list_chatrooms():
+    chatrooms = ch.get_chatrooms()
+    return jsonify({'chatrooms': chatrooms})
+
+@app.route('/test_connection', methods=['GET'])
+def test_connection():
+    return jsonify({'success': 'Connection established'})
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=4999)
