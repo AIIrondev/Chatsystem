@@ -10,6 +10,14 @@ from crypting import Crypting as cr
 
 class UI:
     def __init__(self):
+        self.ch = None
+        self.root = None
+        self.reg = None
+        self.nc = None
+        self.ec = None
+        self.user = None
+        self.chat_name = None
+        self.key_chatroom = None
         self.run_main_loop()
 
     def run_main_loop(self):
@@ -238,7 +246,7 @@ def request(endpoint, method, data=None):
 
 class test_api: # request to /test_connection
     def __init__(self):
-        self.url = 'https://127.0.0.1:4999'
+        self.url = 'http://127.0.0.1:4999'
         self.endpoint = '/test_connection'
         self.method = 'GET'
         self.test_connection()
