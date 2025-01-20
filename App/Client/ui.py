@@ -9,6 +9,9 @@ from crypting import Crypting as cr
 
 
 class UI:
+    def __init__(self):
+        self.run_main_loop()
+
     def run_main_loop(self):
         if self.ch is not None:
             self.ch.destroy()
@@ -238,14 +241,12 @@ class test_api: # request to /test_connection
         self.url = 'https://127.0.0.1:4999'
         self.endpoint = '/test_connection'
         self.method = 'GET'
+        self.test_connection()
         
     def test_connection(self):
         response = requests.get(self.url + self.endpoint)
+        print(response.json())
         return response.json()
 
 def hashing(key):
     return hashlib.sha256(key.encode()).hexdigest()
-
-if __name__ == '__main__':
-    test = test_api()
-    print(test.test_connection())
