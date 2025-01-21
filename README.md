@@ -59,7 +59,7 @@ The security of the application is very important. The following are some of the
 
 - **End to End Encryption**: The messages are encrypted before they are sent to the server. The server does not have access to the encryption keys, so it cannot decrypt the messages. This ensures that even if the server is compromised, the messages cannot be read by an attacker. [Read more](docs/CRYPT.md)
 
-- **No SQL Database**: The Database is a no SQL DB and will 
+- **No SQL Database**: The Database is a no SQL DB and will not be effected by a SQL Injection attack.
 
 ## License
 
