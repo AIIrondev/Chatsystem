@@ -5,7 +5,15 @@ from database import Chatroom as ch
 from database import Database as db
 from datetime import datetime
 from crypting import Crypting as cr
+import os
 app = Flask(__name__)
+
+with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'api.conf'), 'r') as f:
+    api_conf = f.read().splitlines()
+    host = api_conf[0].split('=')[1]
+    port = api_conf[1].split('=')[1]
+    __version__ = api_conf[2].split('=')[1]
+    f.close()
 
 @app.route('/login', methods=['POST'])
 def login(username, password): # TODO: password will be encrypted by the user
@@ -63,11 +71,6 @@ def create_chatroom(name, key):
     ch.add_chatroom(name, ch.hashing(key))
     return jsonify({'success': 'Chatroom created'})
 
-@app.route('/list_chatrooms', methods=['GET'])
-def list_chatrooms():
-    chatrooms = ch.get_chatrooms()
-    return jsonify({'chatrooms': chatrooms})
-
 @app.route('/join_chatroom', methods=['POST'])
 def join_chatroom(chat_name, key):
     if not chat_name or not key:
@@ -79,5 +82,15 @@ def join_chatroom(chat_name, key):
         return jsonify({'error': 'Invalid key'})
     return jsonify({'success': 'Chatroom joined'})
 
+@app.route('/list_chatrooms', methods=['GET'])
+def list_chatrooms():
+    chatrooms = ch.get_chatrooms()
+    return jsonify({'chatrooms': chatrooms})
+
+@app.route('/test_connection', methods=['GET'])
+def test_connection():
+    return jsonify({'success': 'Connection established'})
+
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=4999)
+    app.run(host=host, port=port)
