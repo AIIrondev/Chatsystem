@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from crypting import Crypting as cr
+from App.Client.crypting import Crypting as cr
 import cryptography.exceptions
 from database import Database as db
 from database import User as us

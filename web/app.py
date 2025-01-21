@@ -5,9 +5,17 @@ from database import User as us
 from database import Chatroom as ch
 from datetime import datetime
 from cryptography.exceptions import InvalidTag
+import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+
+with open(os.path.join(os.path.dirname(__file__), "..", 'conf', 'website.conf'), 'r') as f:
+    api_conf = f.read().splitlines()
+    host = api_conf[0].split('=')[1]
+    port = api_conf[1].split('=')[1]
+    __version__ = api_conf[2].split('=')[1]
+    app.secret_key = str(api_conf[3].split('=')[1])
+    f.close()
 
 @app.route('/')
 def home():
@@ -64,8 +72,8 @@ def new_chatroom():
     if 'username' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        name = request.form['name']
-        key = request.form['key']
+        name = request.form['chatroom_name']
+        key = request.form['chatroom_key']
         if not name or not key:
             flash('Please fill all fields', 'error')
             return redirect(url_for('new_chatroom'))
@@ -183,4 +191,4 @@ def send_message(chatroom_name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host=host, port=port, debug=True)

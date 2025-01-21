@@ -1,13 +1,19 @@
-# Import necessary modules and classes
-from flask import Flask, request, jsonify  # Flask framework and request-handling utilities
-from database import User as us  # User-related database operations
-from database import Chatroom as ch  # Chatroom-related database operations
-from database import Database as db  # General database operations
-from datetime import datetime  # For handling date and time
-from crypting import Crypting as cr  # Encryption utility for secure messaging
-
-# Initialize Flask application
+# This should be reachable wth the URl: https://127.0.0.1:4999/enter_chatroom
+from flask import Flask, request, jsonify
+from database import User as us
+from database import Chatroom as ch
+from database import Database as db
+from datetime import datetime
+from crypting import Crypting as cr
+import os
 app = Flask(__name__)
+
+with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'api.conf'), 'r') as f:
+    api_conf = f.read().splitlines()
+    host = api_conf[0].split('=')[1]
+    port = api_conf[1].split('=')[1]
+    __version__ = api_conf[2].split('=')[1]
+    f.close()
 
 @app.route('/login', methods=['POST'])
 def login(username, password):
@@ -93,9 +99,6 @@ def create_chatroom(name, key):
 
 @app.route('/list_chatrooms', methods=['GET'])
 def list_chatrooms():
-    """
-    Lists all available chatrooms.
-    """
     chatrooms = ch.get_chatrooms()
     return jsonify({'chatrooms': chatrooms})
 
@@ -113,8 +116,15 @@ def join_chatroom(chat_name, key):
         return jsonify({'error': 'Invalid key'})
     return jsonify({'success': 'Chatroom joined'})
 
+@app.route('/list_chatrooms', methods=['GET'])
+def list_chatrooms():
+    chatrooms = ch.get_chatrooms()
+    return jsonify({'chatrooms': chatrooms})
+
+@app.route('/test_connection', methods=['GET'])
+def test_connection():
+    return jsonify({'success': 'Connection established'})
+
+
 if __name__ == '__main__':
-    """
-    Starts the Flask application on localhost with port 4999.
-    """
     app.run(host='127.0.0.1', port=4999)
