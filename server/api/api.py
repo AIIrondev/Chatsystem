@@ -116,11 +116,6 @@ def join_chatroom(chat_name, key):
         return jsonify({'error': 'Invalid key'})
     return jsonify({'success': 'Chatroom joined'})
 
-@app.route('/list_chatrooms', methods=['GET'])
-def list_chatrooms():
-    chatrooms = ch.get_chatrooms()
-    return jsonify({'chatrooms': chatrooms})
-
 @app.route('/test_connection', methods=['GET'])
 def test_connection():
     return jsonify({'success': 'Connection established'})

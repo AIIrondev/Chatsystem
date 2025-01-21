@@ -21,6 +21,8 @@ class UI:
         self.run_main_loop()
 
     def run_main_loop(self):
+        if self.user is None:
+            self.register()
         if self.ch is not None:
             self.ch.destroy()
         self.root = tk.Tk()
@@ -51,16 +53,21 @@ class UI:
     def login_user(self):
         username = self.username.get()
         password = self.password.get()
-        request_return = request('/login', 'POST', {'username': username, 'password': password})
+        response = request('/login', 'POST', {'username': username, 'password': password})
+        request_return = response.json()
         if request_return['success']:
             self.user = request_return['user']
             self.reg.destroy()
             self.run_main_loop()
+        else:
+            self.user = None
+            messagebox.showerror('Error', 'Invalid credentials or register')
 
     def register_user(self):
         username = self.username.get()
         password = self.password.get()
-        request_return = request('/register', 'POST', {'username': username, 'password': password})
+        response = request('/register', 'POST', {'username': username, 'password': password})
+        request_return = response.json()
         if request_return['success']:
             self.user = username
             self.reg.destroy()
@@ -98,6 +105,7 @@ class UI:
         name = self.name.get()
         key = self.key.get()
         request_return = request('/create_chatroom', 'POST', {'name': name, 'key': key})
+        request_return = request_return.json()
         if request_return['success']:
             self.nc.destroy()
             self.Chat()
@@ -120,6 +128,7 @@ class UI:
         self.chat_name = self.name.get()
         key = self.key.get()
         request_return = request('/join_chatroom', 'POST', {'chat_name': self.chat_name, 'key': key})
+        request_return = request_return.json()
         if request_return['success']:
             self.key_chatroom = key
             self.ec.destroy()
@@ -236,13 +245,17 @@ class UI:
         self.ec.destroy()
 
 
-def request(endpoint, method, data=None):
-    url = 'https://http://127.0.0.1:4999'
-    if method == 'GET':
-        response = requests.get(url + endpoint)
-    elif method == 'POST':
-        response = requests.post(url + endpoint, data)
-    return response.json()
+def request(endpoint, method, data):
+    url = 'http://127.0.0.1:4999'
+    full_url = url + endpoint
+    if method == 'POST':
+        response = requests.post(full_url, data=data)
+    elif method == 'GET':
+        response = requests.get(full_url, params=data)
+    else:
+        raise ValueError("Unsupported HTTP method")
+    return response
+
 
 class test_api: # request to /test_connection
     def __init__(self):
