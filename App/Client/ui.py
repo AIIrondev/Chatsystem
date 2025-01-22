@@ -1,10 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
-from tkinter import filedialog
 import requests
-import cryptography.exceptions
 import hashlib
+from cryptography.exceptions import InvalidTag
 from crypting import Crypting as cr
 
 
@@ -18,13 +17,13 @@ class UI:
         self.user = None
         self.chat_name = None
         self.key_chatroom = None
-        self.run_main_loop()
+        self.register()
 
     def run_main_loop(self):
-        if self.user is None:
+        if not self.user:
             self.register()
-        if self.ch is not None:
-            self.ch.destroy()
+        else:
+            self.main_window()
         self.root = tk.Tk()
         self.root.title('Chat')
         self.root.geometry('400x400')
@@ -48,44 +47,70 @@ class UI:
         tk.Button(self.reg, text='Login', command=self.login_user).place(x=150, y=200)
         tk.Label(self.reg, text='Or').place(x=150, y=250)
         tk.Button(self.reg, text='Register', command=self.register_user).place(x=150, y=300)
+        self.reg.protocol("WM_DELETE_WINDOW", self.on_close_register)
         self.reg.mainloop()
-    
+
+    def on_close_register(self):
+        self.reg.destroy()
+        SystemExit(0)
+
+
     def login_user(self):
         username = self.username.get()
         password = self.password.get()
-        response = request('/login', 'POST', {'username': username, 'password': password})
-        request_return = response.json()
-        if request_return['success']:
-            self.user = request_return['user']
-            self.reg.destroy()
-            self.run_main_loop()
-        else:
-            self.user = None
-            messagebox.showerror('Error', 'Invalid credentials or register')
+        try:
+            response = request('/login', 'POST', {'username': username, 'password': password})
+            request_return = response.json()
+            if request_return.get('success'):
+                self.user = request_return['user']
+                self.reg.destroy()
+                self.run_main_loop()
+            else:
+                messagebox.showerror('Error', 'Invalid credentials or register')
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to login: {e}')
 
     def register_user(self):
         username = self.username.get()
         password = self.password.get()
-        response = request('/register', 'POST', {'username': username, 'password': password})
-        request_return = response.json()
-        if request_return['success']:
-            self.user = username
-            self.reg.destroy()
-            self.run_main_loop()
+        try:
+            response = request('/register', 'POST', {'username': username, 'password': password})
+            request_return = response.json()
+            if request_return.get('success'):
+                self.user = username
+                self.reg.destroy()
+                self.run_main_loop()
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to register: {e}')
 
     def logout(self):
         self.user = None
-        if self.ch is not None:
+        if self.ch:
             self.ch.destroy()
-        if self.root is not None:
+        if self.root:
             self.root.destroy()
         self.register()
 
     def main_window(self):
+        if self.ch:
+            self.ch.destroy()
+        self.root = tk.Tk()
+        self.root.title('Chat')
+        self.root.geometry('400x400')
+        self.root.resizable(False, False)
+
         tk.Label(self.root, text='Welcome to the chat').place(x=150, y=50)
         tk.Button(self.root, text='New Chatroom', command=self.new_chatroom).place(x=150, y=100)
         tk.Button(self.root, text='Enter Chatroom', command=self.enter_chatroom).place(x=150, y=150)
         tk.Button(self.root, text='Logout', command=self.logout).place(x=150, y=200)
+
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close_main)
+        self.root.mainloop()
+
+    def on_close_main(self):
+        if self.root:
+            self.root.destroy()
+
 
     def new_chatroom(self):
         self.nc = tk.Tk()
@@ -104,11 +129,14 @@ class UI:
     def create_chatroom(self):
         name = self.name.get()
         key = self.key.get()
-        request_return = request('/create_chatroom', 'POST', {'name': name, 'key': key})
-        request_return = request_return.json()
-        if request_return['success']:
-            self.nc.destroy()
-            self.Chat()
+        try:
+            response = request('/create_chatroom', 'POST', {'name': name, 'key': key})
+            request_return = response.json()
+            if request_return.get('success'):
+                self.nc.destroy()
+                self.Chat()
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to create chatroom: {e}')
 
     def enter_chatroom(self):
         self.ec = tk.Tk()
@@ -127,15 +155,18 @@ class UI:
     def join_chatroom(self):
         self.chat_name = self.name.get()
         key = self.key.get()
-        request_return = request('/join_chatroom', 'POST', {'chat_name': self.chat_name, 'key': key})
-        request_return = request_return.json()
-        if request_return['success']:
-            self.key_chatroom = key
-            self.ec.destroy()
-            self.Chat()
+        try:
+            response = request('/join_chatroom', 'POST', {'chat_name': self.chat_name, 'key': key})
+            request_return = response.json()
+            if request_return.get('success'):
+                self.key_chatroom = key
+                self.ec.destroy()
+                self.Chat()
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to join chatroom: {e}')
 
     def Chat(self):
-        if self.root is not None:
+        if self.root:
             self.root.destroy()
             self.root = None
         self.ch = tk.Tk()
@@ -170,44 +201,49 @@ class UI:
         self.message_user.place(x=175, y=325)
         tk.Button(self.ch, text="Send", command=self.send_message).place(x=150, y=350)
         tk.Button(self.ch, text='Refresh', command=self.refresh).place(x=150, y=375)
-        tk.Button(self.ch, text='Main Menu', command=self.back()).place(x=150, y=400)
         tk.Button(self.ch, text='Main Menu', command=self.back).place(x=150, y=400)
+
         try:
             self.update_messages()
         except Exception as e:
             messagebox.showerror('Error', f'Failed to update messages: {e}')
 
     def back(self):
-        self.ch.destroy()
+        if self.ch:
+            self.ch.destroy()
         self.run_main_loop()
 
     def update_messages(self):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
 
-        messages = request('/receive_message', 'GET', {'chat_room': self.chat_name})['message']
-        cr_instance = cr()
-        cr_instance.set_key(hashing(self.key_chatroom))
-        for message in messages:
-            try:
-                if message["chat_room"] == self.chat_name:
-                    decrypted_message = cr_instance.decrypt(message["message"])
-                    message_frame = tk.Frame(self.scrollable_frame)
-                    message_frame.pack(fill="x", pady=5)
-                    message_label = tk.Label(
-                        message_frame,
-                        text=f"{message['user']} | {decrypted_message} | {message['Date']}",
-                        wraplength=500
-                    )
-                    message_label.pack(side="left", anchor="w")
-                    reply_button = tk.Button(
-                        message_frame,
-                        text="...",
-                        command=lambda msg_id=message['_id']: self.option_menu(msg_id)
-                    )
-                    reply_button.pack(side="right", anchor="e")
-            except cryptography.exceptions.InvalidTag:
-                tk.Label(self.scrollable_frame, text="Error decrypting message").pack(anchor="w")
+        try:
+            response = request('/receive_message', 'GET', {'chat_room': self.chat_name})
+            messages = response.json().get('message', [])
+            cr_instance = cr()
+            cr_instance.set_key(hashing(self.key_chatroom))
+            for message in messages:
+                try:
+                    if message.get("chat_room") == self.chat_name:
+                        decrypted_message = cr_instance.decrypt(message["message"])
+                        message_frame = tk.Frame(self.scrollable_frame)
+                        message_frame.pack(fill="x", pady=5)
+                        message_label = tk.Label(
+                            message_frame,
+                            text=f"{message['user']} | {decrypted_message} | {message['Date']}",
+                            wraplength=500
+                        )
+                        message_label.pack(side="left", anchor="w")
+                        reply_button = tk.Button(
+                            message_frame,
+                            text="...",
+                            command=lambda msg_id=message['_id']: self.option_menu(msg_id)
+                        )
+                        reply_button.pack(side="right", anchor="e")
+                except InvalidTag:
+                    tk.Label(self.scrollable_frame, text="Error decrypting message").pack(anchor="w")
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to retrieve messages: {e}')
 
     def refresh(self):
         self.update_messages()
@@ -221,7 +257,12 @@ class UI:
             cr_instance = cr()
             cr_instance.set_key(hashing(self.key_chatroom))
             encrypted_message = cr_instance.encrypt(message)
-            request('/send_message', 'POST', {'chat_name': self.chat_name, 'key': self.key_chatroom, 'message': encrypted_message, 'user': self.user})
+            request('/send_message', 'POST', {
+                'chat_name': self.chat_name,
+                'key': self.key_chatroom,
+                'message': encrypted_message,
+                'user': self.user
+            })
         except Exception as e:
             messagebox.showerror('Error', f'Failed to send message: {e}')
         finally:
@@ -234,30 +275,31 @@ class UI:
             self.delete_message(message_id)
 
     def delete_message(self, message_id):
-        request('/delete_message', 'POST', {'message_id': message_id})
-        self.refresh()
-
-    def close(self):
-        self.root.destroy()
-        self.ch.destroy()
-        self.reg.destroy()
-        self.nc.destroy()
-        self.ec.destroy()
+        try:
+            request('/delete_message', 'POST', {'message_id': message_id})
+            self.refresh()
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to delete message: {e}')
 
 
 def request(endpoint, method, data):
     url = 'http://127.0.0.1:4999'
     full_url = url + endpoint
-    if method == 'POST':
-        response = requests.post(full_url, data=data)
-    elif method == 'GET':
-        response = requests.get(full_url, params=data)
-    else:
-        raise ValueError("Unsupported HTTP method")
-    return response
+    try:
+        if method == 'POST':
+            response = requests.post(full_url, data=data)
+        elif method == 'GET':
+            response = requests.get(full_url, params=data)
+        else:
+            raise ValueError("Unsupported HTTP method")
+        response.raise_for_status()
+        return response
+    except requests.RequestException as e:
+        messagebox.showerror("Error", f"Request failed: {e}")
+        raise
 
 
-class test_api: # request to /test_connection
+class test_api:
     def __init__(self):
         self.url = 'http://127.0.0.1:4999'
         self.endpoint = '/test_connection'
@@ -268,6 +310,7 @@ class test_api: # request to /test_connection
         response = requests.get(self.url + self.endpoint)
         print(response.json())
         return response.json()
+
 
 def hashing(key):
     return hashlib.sha256(key.encode()).hexdigest()
