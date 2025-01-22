@@ -69,4 +69,4 @@ Once the application is running, you can open your web browser and navigate to t
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the Apache License.
