@@ -13,3 +13,4 @@ if __name__ == '__main__':
         print("API not available")
     if running_posible:
         crazy()
+ 

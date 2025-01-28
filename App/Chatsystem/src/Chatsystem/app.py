@@ -78,6 +78,9 @@ class ChatApp(toga.App):
         username = self.username_input.value
         password = self.password_input.value
         try:
+            if not username or not password:
+                self.show_error("Please fill all the fields or register")
+                return
             response = self.request('/login', 'POST', {'username': username, 'password': password})
             if response.get('success'):
                 self.user = response['user']
