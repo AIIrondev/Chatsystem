@@ -88,7 +88,6 @@ def new_chatroom():
         return redirect(url_for('home'))
     return render_template('new_chatroom.html')
 
-
 @app.route('/enter_chatroom', methods=['GET', 'POST'])
 def enter_chatroom():
     if 'username' not in session:
