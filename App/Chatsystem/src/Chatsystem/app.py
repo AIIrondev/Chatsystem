@@ -1,11 +1,7 @@
-"""
-This is a simple Chatsystem that is fully private and self hostable
-"""
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW
+from toga.style.pack import COLUMN, ROW, CENTER, LEFT
 import requests
-import hashlib
 
 
 class ChatApp(toga.App):
@@ -20,58 +16,130 @@ class ChatApp(toga.App):
         self.login_view()
         self.main_window.show()
 
+    def clear_main_box(self):
+        """Clears the main box's children."""
+        for child in self.main_box.children:
+            self.main_box.remove(child)
+
     def login_view(self):
         """Displays the login/register screen."""
-        self.main_box.children.clear()
+        self.clear_main_box()
 
-        self.main_box.add(toga.Label("Login/Register", style=Pack(padding=5)))
-        self.username_input = toga.TextInput(placeholder="Username", style=Pack(padding=5))
-        self.password_input = toga.PasswordInput(placeholder="Password", style=Pack(padding=5))
+        # Centered Title
+        self.main_box.add(toga.Label("Login/Register", style=Pack(padding=10, font_size=16, text_align=CENTER)))
 
+        # Input fields for username and password
+        self.username_input = toga.TextInput(placeholder="Username", style=Pack(padding=5, flex=1))
+        self.password_input = toga.PasswordInput(placeholder="Password", style=Pack(padding=5, flex=1))
+
+        # Buttons for Login and Register
+        button_box = toga.Box(style=Pack(direction=ROW, alignment=CENTER, padding_top=10))
         self.login_button = toga.Button("Login", on_press=self.login_user, style=Pack(padding=5))
         self.register_button = toga.Button("Register", on_press=self.register_user, style=Pack(padding=5))
+        button_box.add(self.login_button)
+        button_box.add(self.register_button)
 
+        # Add inputs and buttons to the main box
         self.main_box.add(self.username_input)
         self.main_box.add(self.password_input)
-        self.main_box.add(self.login_button)
-        self.main_box.add(self.register_button)
+        self.main_box.add(button_box)
 
     def chat_view(self):
         """Displays the chat menu."""
-        self.main_box.children.clear()
+        self.clear_main_box()
 
-        self.main_box.add(toga.Label(f"Welcome {self.user}", style=Pack(padding=5)))
-        new_chat_button = toga.Button("New Chatroom", on_press=self.new_chatroom, style=Pack(padding=5))
-        enter_chat_button = toga.Button("Enter Chatroom", on_press=self.enter_chatroom, style=Pack(padding=5))
-        logout_button = toga.Button("Logout", on_press=self.logout, style=Pack(padding=5))
-
-        self.main_box.add(new_chat_button)
-        self.main_box.add(enter_chat_button)
-        self.main_box.add(logout_button)
+        self.main_box.add(toga.Label(f"Welcome {self.user}!", style=Pack(padding=5, font_size=16, text_align=CENTER)))
+        
+        # Buttons for chatroom options
+        self.main_box.add(toga.Button("New Chatroom", on_press=self.new_chatroom, style=Pack(padding=5)))
+        self.main_box.add(toga.Button("Enter Chatroom", on_press=self.enter_chatroom, style=Pack(padding=5)))
+        self.main_box.add(toga.Button("Logout", on_press=self.logout, style=Pack(padding=5)))
 
     def new_chatroom(self, widget):
         """Handles new chatroom creation."""
-        self.main_box.children.clear()
-        self.main_box.add(toga.Label("Create Chatroom", style=Pack(padding=5)))
-        self.chatroom_name_input = toga.TextInput(placeholder="Chatroom Name", style=Pack(padding=5))
-        self.chatroom_key_input = toga.TextInput(placeholder="Key", style=Pack(padding=5))
+        self.clear_main_box()
+        self.main_box.add(toga.Label("Create Chatroom", style=Pack(padding=5, font_size=16)))
+
+        # Input for chatroom name and key
+        self.chatroom_name_input = toga.TextInput(placeholder="Chatroom Name", style=Pack(padding=5, flex=1))
+        self.chatroom_key_input = toga.TextInput(placeholder="Key", style=Pack(padding=5, flex=1))
         create_button = toga.Button("Create", on_press=self.create_chatroom, style=Pack(padding=5))
 
+        # Add inputs and button
         self.main_box.add(self.chatroom_name_input)
         self.main_box.add(self.chatroom_key_input)
         self.main_box.add(create_button)
 
     def enter_chatroom(self, widget):
         """Handles entering an existing chatroom."""
-        self.main_box.children.clear()
-        self.main_box.add(toga.Label("Enter Chatroom", style=Pack(padding=5)))
-        self.chatroom_name_input = toga.TextInput(placeholder="Chatroom Name", style=Pack(padding=5))
-        self.chatroom_key_input = toga.TextInput(placeholder="Key", style=Pack(padding=5))
+        self.clear_main_box()
+        self.main_box.add(toga.Label("Enter Chatroom", style=Pack(padding=5, font_size=16)))
+
+        # Input for chatroom name and key
+        self.chatroom_name_input = toga.TextInput(placeholder="Chatroom Name", style=Pack(padding=5, flex=1))
+        self.chatroom_key_input = toga.TextInput(placeholder="Key", style=Pack(padding=5, flex=1))
         join_button = toga.Button("Join", on_press=self.join_chatroom, style=Pack(padding=5))
 
+        # Add inputs and button
         self.main_box.add(self.chatroom_name_input)
         self.main_box.add(self.chatroom_key_input)
         self.main_box.add(join_button)
+
+    def chatroom_view(self):
+        """Displays the chatroom interface."""
+        self.clear_main_box()
+
+        self.main_box.add(toga.Label(f"Chatroom: {self.chat_name}", style=Pack(padding=10, font_size=16, text_align=CENTER)))
+
+        # Messages display
+        self.messages_container = toga.ScrollContainer(style=Pack(flex=1, padding=5))
+        self.messages_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
+        self.messages_container.content = self.messages_box
+
+        # Input and Buttons for Sending/Refreshing
+        input_box = toga.Box(style=Pack(direction=ROW, padding=5))
+        self.message_input = toga.TextInput(placeholder="Enter your message", style=Pack(flex=1, padding_right=5))
+        send_button = toga.Button("Send", on_press=self.send_message, style=Pack(padding=5))
+        input_box.add(self.message_input)
+        input_box.add(send_button)
+
+        self.main_box.add(self.messages_container)
+        self.main_box.add(input_box)
+        self.main_box.add(toga.Button("Back", on_press=self.chat_view, style=Pack(padding=5)))
+
+        # Load messages
+        self.update_messages()
+
+    def update_messages(self, widget=None):
+        """Updates the chatroom messages."""
+        self.clear_main_box()
+        try:
+            response = self.request('/receive_message', 'GET', {'chat_room': self.chat_name})
+            messages = response.get('message', [])
+            for msg in messages:
+                self.messages_box.add(
+                    toga.Label(f"{msg['user']}: {msg['message']} ({msg['Date']})", style=Pack(padding=2, text_align=LEFT))
+                )
+        except Exception as e:
+            self.show_error(f"Failed to load messages: {e}")
+
+    def send_message(self, widget):
+        """Sends a message."""
+        message = self.message_input.value
+        if not message:
+            self.show_error("Message cannot be empty!")
+            return
+        try:
+            response = self.request('/send_message', 'POST', {
+                'chat_name': self.chat_name,
+                'key': self.key_chatroom,
+                'message': message,
+                'user': self.user
+            })
+            self.update_messages()
+            self.message_input.value = ""
+        except Exception as e:
+            self.show_error(f"Failed to send message: {e}")
 
     def login_user(self, widget):
         """Logs in the user."""
@@ -133,55 +201,6 @@ class ChatApp(toga.App):
         except Exception as e:
             self.show_error(f"Failed to join chatroom: {e}")
 
-    def chatroom_view(self):
-        """Displays the chatroom interface."""
-        self.main_box.children.clear()
-
-        self.main_box.add(toga.Label(f"Chatroom: {self.chat_name}", style=Pack(padding=5)))
-        self.message_input = toga.TextInput(placeholder="Enter your message", style=Pack(padding=5))
-        send_button = toga.Button("Send", on_press=self.send_message, style=Pack(padding=5))
-        refresh_button = toga.Button("Refresh", on_press=self.update_messages, style=Pack(padding=5))
-        back_button = toga.Button("Back", on_press=self.chat_view, style=Pack(padding=5))
-
-        self.messages_box = toga.ScrollContainer(style=Pack(flex=1, padding=10))
-        self.main_box.add(self.messages_box)
-        self.main_box.add(self.message_input)
-        self.main_box.add(send_button)
-        self.main_box.add(refresh_button)
-        self.main_box.add(back_button)
-
-        self.update_messages()
-
-    def send_message(self, widget):
-        """Sends a message."""
-        message = self.message_input.value
-        if not message:
-            self.show_error("Message cannot be empty!")
-            return
-        try:
-            response = self.request('/send_message', 'POST', {
-                'chat_name': self.chat_name,
-                'key': self.key_chatroom,
-                'message': message,
-                'user': self.user
-            })
-            self.update_messages()
-            self.message_input.value = ""
-        except Exception as e:
-            self.show_error(f"Failed to send message: {e}")
-
-    def update_messages(self, widget=None):
-        """Updates the chatroom messages."""
-        try:
-            response = self.request('/receive_message', 'GET', {'chat_room': self.chat_name})
-            messages = response.get('message', [])
-            messages_display = "\n".join(
-                f"{msg['user']}: {msg['message']} ({msg['Date']})" for msg in messages
-            )
-            self.messages_box.content = toga.Label(messages_display, style=Pack(padding=10))
-        except Exception as e:
-            self.show_error(f"Failed to load messages: {e}")
-
     def logout(self, widget):
         """Logs out the user."""
         self.user = None
@@ -193,7 +212,7 @@ class ChatApp(toga.App):
 
     def show_info(self, message):
         """Displays an informational message."""
-        toga.Command(lambda: None, text=message, enabled=False).execute()
+        self.main_window.info_dialog("Info", message)
 
     def request(self, endpoint, method, data=None):
         """Send a request to the server."""
