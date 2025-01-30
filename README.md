@@ -26,7 +26,8 @@ Here I will give you a overview of the Server Options you have to deploy the Cha
 
 ### Linux
 
-### Windows
+I will User Ubuntu Server to Host the MongoDB and Website 
+
 
 ### Database
 
