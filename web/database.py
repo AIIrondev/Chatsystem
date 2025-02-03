@@ -55,7 +55,7 @@ class Database:
         db = client['Chatsystem']
         messages = db['messages']
         messages.create_index('chat_room')
-        messages.update_one({'_id': ObjectId(message_id)}, {'$set': message})
+        messages.update_one({'_id': ObjectId(message_id)}, {'$set': {'message': message}})
         client.close()
 
     def __del__(self):
