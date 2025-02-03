@@ -150,6 +150,7 @@ def chat():
             if message['chat_room'] == chat_name:
                 decrypted_message = cr_instance.decrypt(message['message'])
                 decrypted_messages.append({
+                    'id': message['id'],
                     'user': message['user'],
                     'content': decrypted_message,
                     'date': message['Date'],
@@ -188,6 +189,43 @@ def send_message(chatroom_name):
 
     return redirect(url_for('chat', chat_name=chatroom_name))
 
+@app.route('/edit_message/<message_id>', methods=['POST'])
+def edit_message(message_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    new_content = request.form['new_content']
+    key = session.get('chat_key')
+    
+    if not new_content:
+        flash('Message cannot be empty', 'error')
+        return redirect(url_for('chat'))
+
+    try:
+        cr_instance = cr()
+        hashed_key = ch.hashing(key)
+        cr_instance.set_key(hashed_key)
+        encrypted_message = cr_instance.encrypt(new_content)
+        
+        db().update_message(message_id, encrypted_message)
+        flash('Message edited successfully', 'success')
+    except Exception as e:
+        flash(f'Failed to edit message: {e}', 'error')
+
+    return redirect(url_for('chat', chat_name=session['chat_name']))
+
+@app.route('/delete_message/<message_id>', methods=['POST'])
+def delete_message(message_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        db().delete_message(message_id)
+        flash('Message deleted successfully', 'success')
+    except Exception as e:
+        flash(f'Failed to delete message: {e}', 'error')
+
+    return redirect(url_for('chat', chat_name=session['chat_name']))
 
 if __name__ == '__main__':
     app.run(host=host, port=port, debug=True)
