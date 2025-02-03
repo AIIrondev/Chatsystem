@@ -150,13 +150,14 @@ def chat():
             if message['chat_room'] == chat_name:
                 decrypted_message = cr_instance.decrypt(message['message'])
                 decrypted_messages.append({
-                    'id': message['id'],
+                    'id': message['_id'],
                     'user': message['user'],
                     'content': decrypted_message,
                     'date': message['Date'],
                 })
         except InvalidTag:
-            decrypted_messages.append({'user': 'System', 'content': 'Error decrypting message', 'date': ''})
+            flash('Invalid key', 'error')
+            return redirect(url_for('enter_chatroom'))
     return render_template('chat.html', messages=decrypted_messages, chat_name=chat_name)
 
 @app.route('/send_message/<chatroom_name>', methods=['POST'])
