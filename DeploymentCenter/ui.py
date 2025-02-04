@@ -117,6 +117,27 @@ class DeploymentCenterApp:
     def help(self):
         webbrowser.open("https://github.com/AIIrondev/Chatsystem")
 
+
+class deploy_API:
+    def __init__(self, host, port, secret_key):
+        self.host = host
+        self.port = port
+        self.secret_key = secret_key
+
+    def deploy(self):
+        pass
+
+class deploy_website:
+    def __init__(self, host, port, name, secret_key):
+        self.host = host
+        self.port = port
+        self.name = name
+        self.secret_key = secret_key
+    
+    def deploy(self):
+        pass
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = DeploymentCenterApp(root)
