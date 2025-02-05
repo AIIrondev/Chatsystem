@@ -227,5 +227,8 @@ def delete_message(message_id):
 
     return redirect(url_for('chat', chat_name=session['chat_name']))
 
-if __name__ == '__main__':
+def main_run():
     app.run(host=host, port=port, debug=True)
+
+if __name__ == '__main__':
+    main_run()
