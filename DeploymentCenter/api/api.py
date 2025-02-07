@@ -1,11 +1,13 @@
 # This should be reachable wth the URl: https://127.0.0.1:4999/enter_chatroom
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), 'api'))
 from flask import Flask, request, jsonify
 from database import User as us
 from database import Chatroom as ch
 from database import Database as db
 from datetime import datetime
 from crypting import Crypting as cr
-import os
 app = Flask(__name__)
 
 with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'api.conf'), 'r') as f:
@@ -156,3 +158,6 @@ def test_connection():
 
 def run_main():
     app.run(host=host, port=port)# '127.0.0.1', 4999
+
+if __name__ == '__main__':
+    run_main()

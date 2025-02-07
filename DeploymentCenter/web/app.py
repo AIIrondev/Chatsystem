@@ -1,15 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), 'web'))
 from crypting import Crypting as cr
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import Database as db
 from database import User as us
 from database import Chatroom as ch
 from datetime import datetime
 from cryptography.exceptions import InvalidTag
-import os
+
 
 app = Flask(__name__)
 
-with open(os.path.join(os.path.dirname(__file__), "..", 'conf', 'website.conf'), 'r') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'website.conf'), 'r') as f:
     api_conf = f.read().splitlines()
     host = api_conf[0].split('=')[1]
     port = api_conf[1].split('=')[1]
@@ -229,3 +232,6 @@ def delete_message(message_id):
 
 def main_run():
     app.run(host=host, port=port, debug=True)
+
+if __name__ == '__main__':
+    main_run()
