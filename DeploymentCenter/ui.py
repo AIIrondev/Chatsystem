@@ -128,44 +128,25 @@ class DeploymentCenterApp:
 
 
 class deploy_API:
-    # def __init__(self):
-    #     print(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"))
-    #     with open(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"), "r") as f:
-    #         api_conf = f.readlines()
-    #         api_conf = [line.strip().split("=")[1] for line in api_conf]
-    #     self.host = api_conf[0]
-    #     self.port = api_conf[1]
-    #     self.secret_key = api_conf[2]
-
     def deploy():
         print("python " + os.path.join(os.path.dirname(__file__), "api", "api.py"))
         subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
 
     def stop():
         if sys.platform == "win32":
-            subprocess.Popen(['cmd.exe', '/c', 'taskkill /f /im cmd.exe'])
+            os.system("taskkill /f /im python.exe")
         else:
             subprocess.Popen(['killall', 'python'])
 
 
 class deploy_website:
-    # def __init__(self):
-    #     print(os.path.join(os.path.dirname(__file__), "..", "conf", "website.conf"))
-    #     with open(os.path.join(os.path.dirname(__file__), "..", "conf", "website.conf"), "r") as f:
-    #         deployment_conf = f.readlines()
-    #         deployment_conf = [line.strip().split("=")[1] for line in deployment_conf]
-    #     self.host = deployment_conf[0]
-    #     self.port = deployment_conf[1]
-    #     self.name = deployment_conf[2]
-    #     self.secret_key = deployment_conf[3]
-    
     def deploy():
         print("python" + os.path.join(os.path.dirname(__file__), "web", "app.py"))
         subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
 
     def stop():
         if sys.platform == "win32":
-            subprocess.Popen(['cmd.exe', '/c', 'taskkill /f /im cmd.exe'])
+            os.system("taskkill /f /im python.exe")
         else:
             subprocess.Popen(['killall', 'python'])
 
