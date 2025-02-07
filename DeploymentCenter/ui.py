@@ -1,6 +1,8 @@
 import tkinter as tk
 import os
 import webbrowser
+from web import app as web_app
+from api import api as api_app
 
 class DeploymentCenterApp:
     def __init__(self, root):
@@ -119,23 +121,29 @@ class DeploymentCenterApp:
 
 
 class deploy_API:
-    def __init__(self, host, port, secret_key):
-        self.host = host
-        self.port = port
-        self.secret_key = secret_key
+    def __init__(self):
+        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"), "r") as f:
+            api_conf = f.readlines()
+            api_conf = [line.strip().split("=")[1] for line in api_conf]
+        self.host = api_conf[0]
+        self.port = api_conf[1]
+        self.secret_key = api_conf[2]
 
     def deploy(self):
-        pass
+        api_app.run_main(host=self.host, port=self.port)
 
 class deploy_website:
-    def __init__(self, host, port, name, secret_key):
-        self.host = host
-        self.port = port
-        self.name = name
-        self.secret_key = secret_key
+    def __init__(self):
+        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "website.conf"), "r") as f:
+            deployment_conf = f.readlines()
+            deployment_conf = [line.strip().split("=")[1] for line in deployment_conf]
+        self.host = deployment_conf[0]
+        self.port = deployment_conf[1]
+        self.name = deployment_conf[2]
+        self.secret_key = deployment_conf[3]
     
     def deploy(self):
-        pass
+        web_app.main_run(host=self.host, port=self.port)
 
 
 if __name__ == "__main__":

@@ -229,6 +229,3 @@ def delete_message(message_id):
 
 def main_run():
     app.run(host=host, port=port, debug=True)
-
-if __name__ == '__main__':
-    main_run()

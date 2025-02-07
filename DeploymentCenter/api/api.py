@@ -154,5 +154,5 @@ def test_connection():
     return jsonify({'success': 'Connection established'})
 
 
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=4999)
+def run_main():
+    app.run(host=host, port=port)# '127.0.0.1', 4999
