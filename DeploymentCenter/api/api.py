@@ -1,7 +1,5 @@
 # This should be reachable wth the URl: https://127.0.0.1:4999/enter_chatroom
-import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), 'api'))
 from flask import Flask, request, jsonify
 from database import User as us
 from database import Chatroom as ch

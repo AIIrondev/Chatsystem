@@ -1,7 +1,5 @@
 import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), 'web'))
-from crypting import Crypting as cr
+from DeploymentCenter.crypting import Crypting as cr
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import Database as db
 from database import User as us
