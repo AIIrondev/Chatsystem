@@ -2,9 +2,7 @@ import tkinter as tk
 import os
 import sys
 import webbrowser
-import api
-import web
-
+import subprocess
 
 
 class DeploymentCenterApp:
@@ -30,14 +28,6 @@ class DeploymentCenterApp:
         self.button_configure.place(x=350, y=300)
         self.button_help = tk.Button(self.frame, text="Help", font=("Arial", 12), command=self.help)
         self.button_help.place(x=500, y=300)
-
-    def deploy(self):
-        if self.label_deploy_value.cget("text") == "ON":
-            self.label_deploy_value.config(text="OFF")
-            self.running = False
-        else:
-            self.label_deploy_value.config(text="ON")
-            self.running = True
 
     def configure(self):
         self.frame.destroy()
@@ -121,32 +111,63 @@ class DeploymentCenterApp:
 
     def help(self):
         webbrowser.open("https://github.com/AIIrondev/Chatsystem")
+    
+    def deploy(self):
+        if self.label_deploy_value.cget("text") == "ON":
+            self.label_deploy_value.config(text="OFF")
+            self.running = False
+            self.button_deploy.config(text="Deploy")
+            deploy_API.stop()
+            deploy_website.stop()
+        else:
+            self.label_deploy_value.config(text="ON")
+            self.running = True
+            self.button_deploy.config(text="Stop")
+            deploy_API.deploy()
+            deploy_website.deploy()
 
 
 class deploy_API:
-    def __init__(self):
-        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"), "r") as f:
-            api_conf = f.readlines()
-            api_conf = [line.strip().split("=")[1] for line in api_conf]
-        self.host = api_conf[0]
-        self.port = api_conf[1]
-        self.secret_key = api_conf[2]
+    # def __init__(self):
+    #     print(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"))
+    #     with open(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"), "r") as f:
+    #         api_conf = f.readlines()
+    #         api_conf = [line.strip().split("=")[1] for line in api_conf]
+    #     self.host = api_conf[0]
+    #     self.port = api_conf[1]
+    #     self.secret_key = api_conf[2]
 
-    def deploy(self):
-        api()
+    def deploy():
+        print("python " + os.path.join(os.path.dirname(__file__), "api", "api.py"))
+        subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
+
+    def stop():
+        if sys.platform == "win32":
+            subprocess.Popen(['cmd.exe', '/c', 'taskkill /f /im cmd.exe'])
+        else:
+            subprocess.Popen(['killall', 'python'])
+
 
 class deploy_website:
-    def __init__(self):
-        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "website.conf"), "r") as f:
-            deployment_conf = f.readlines()
-            deployment_conf = [line.strip().split("=")[1] for line in deployment_conf]
-        self.host = deployment_conf[0]
-        self.port = deployment_conf[1]
-        self.name = deployment_conf[2]
-        self.secret_key = deployment_conf[3]
+    # def __init__(self):
+    #     print(os.path.join(os.path.dirname(__file__), "..", "conf", "website.conf"))
+    #     with open(os.path.join(os.path.dirname(__file__), "..", "conf", "website.conf"), "r") as f:
+    #         deployment_conf = f.readlines()
+    #         deployment_conf = [line.strip().split("=")[1] for line in deployment_conf]
+    #     self.host = deployment_conf[0]
+    #     self.port = deployment_conf[1]
+    #     self.name = deployment_conf[2]
+    #     self.secret_key = deployment_conf[3]
     
-    def deploy(self):
-        web()
+    def deploy():
+        print("python" + os.path.join(os.path.dirname(__file__), "web", "app.py"))
+        subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
+
+    def stop():
+        if sys.platform == "win32":
+            subprocess.Popen(['cmd.exe', '/c', 'taskkill /f /im cmd.exe'])
+        else:
+            subprocess.Popen(['killall', 'python'])
 
 
 if __name__ == "__main__":
