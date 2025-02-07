@@ -1,5 +1,5 @@
 import os
-from DeploymentCenter.crypting import Crypting as cr
+from crypting import Crypting as cr
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import Database as db
 from database import User as us
