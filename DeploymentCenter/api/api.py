@@ -102,11 +102,20 @@ def delete_message(message_id):
     return jsonify({'success': 'Message deleted'})
 
 @app.route('/receive_message', methods=['GET'])
-def receive_message(chat_room):
+def receive_message():
     """
     Retrieves all messages from a specified chatroom.
     """
-    return jsonify({'message': db.get_messages(chat_room)})
+    chat_room = request.args.get('chat_room')
+    
+    print(chat_room)
+
+    if not chat_room:
+        return jsonify({'error': 'Chatroom name is required'}), 400
+    
+    messages = db().get_messages(chat_room)
+    return jsonify({'message': messages})
+
 
 @app.route('/create_chatroom', methods=['POST'])
 def create_chatroom():
