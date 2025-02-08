@@ -129,8 +129,11 @@ class DeploymentCenterApp:
 
 class deploy_API:
     def deploy():
-        print("python " + os.path.join(os.path.dirname(__file__), "api", "api.py"))
-        subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
+        if sys.platform == "win32":
+            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
+        else:
+            subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
+        
 
     def stop():
         if sys.platform == "win32":
@@ -141,8 +144,11 @@ class deploy_API:
 
 class deploy_website:
     def deploy():
-        print("python" + os.path.join(os.path.dirname(__file__), "web", "app.py"))
-        subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
+        if sys.platform == "win32":
+            print("python" + os.path.join(os.path.dirname(__file__), "web", "app.py"))
+            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
+        else:
+            subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
 
     def stop():
         if sys.platform == "win32":
