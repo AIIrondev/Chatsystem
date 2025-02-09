@@ -14,7 +14,7 @@ class UI:
         self.key_chatroom = None
         self.root = tk.Tk()
         self.root.title('Chat')
-        self.root.geometry('700x700')
+        self.root.geometry('600x500')
         self.root.resizable(False, False)
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.first = None
@@ -100,6 +100,7 @@ class UI:
         self.key = tk.Entry(self.frame)
         self.key.place(x=120, y=150)
         tk.Button(self.frame, text='Create', command=self.create_chatroom).place(x=150, y=200)
+        tk.Button(self.frame, text='Main Menu', command=self.main_window).place(x=150, y=250)
 
     def create_chatroom(self):
         name = self.name.get()
@@ -159,6 +160,7 @@ class UI:
 
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.v_scrollbar.set)
+        self.canvas.bind_all("<MouseWheel>", lambda e: self.canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
 
         self.canvas.pack(side="left", fill="both", expand=True)
         self.v_scrollbar.pack(side="right", fill="y")

@@ -51,6 +51,7 @@ class Database:
         db = client['Chatsystem']
         messages = db['messages']
         messages.create_index('chat_room')
+        message_id = message_id["message_id"]
         messages.delete_one({'_id': ObjectId(message_id)})
         client.close()
 
