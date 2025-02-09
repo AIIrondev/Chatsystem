@@ -25,8 +25,12 @@ Here I will give you a overview of the Server Options you have to deploy the Cha
 
 ### Linux
 
-I will User Ubuntu Server to Host the MongoDB and Website 
+I will User Ubuntu Server to Host the MongoDB and Website as well as the api.
+For this pourpus i have build a tool to help you [Deployment Center](DeploymentCenter/README_DEPLOY.md).
 
+### Windows
+
+You can also do it on windows with the same tool but it can happen that you need to install and start mongodb extra.
 
 ### Database
 
@@ -35,13 +39,16 @@ For more Information see [Docs](docs/Mongodb.md) or [Python Implementation](docs
 
 ### Website Hosting
 
+The Website is a Flask app build to interact with the Database and serve the Webapp.
+
 ## Client
 
 The clients will interact with the MongoDB server for loging in, generating a Chatroom, writing mesages and join Chatrooms.
+To learn more read the Documentation for the [Client APP](App/README_APP.md)
 
 ### Website
 
-The website will be the most used client because of the better security. For more information read the [WEB](docs/web.md)
+The website will be the most used client because of the better security. For more information read the [WEB](DeploymentCenter/web/README_WEB.md)
 
 ## Installation
 
