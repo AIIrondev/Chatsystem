@@ -1,80 +1,92 @@
 # Chat Application
 
-## Beschreibung
-Diese Anwendung ist eine sichere Chat-Applikation, die eine Benutzerregistrierung, Anmeldung und die Kommunikation in verschlüsselten Chatrooms ermöglicht. Die Kommunikation erfolgt über eine API, und die Nachrichten werden mittels AES-GCM-Verschlüsselung gesichert.
+## Description
 
-## Funktionsweise
-Die Anwendung besteht aus mehreren Modulen:
-- **main.py**: Startet die Anwendung und prüft, ob die API erreichbar ist.
-- **ui.py**: Stellt die Benutzeroberfläche mit `tkinter` bereit, verwaltet die Benutzerinteraktionen und steuert die Navigation.
-- **crypting.py**: Stellt die Verschlüsselungs- und Entschlüsselungsfunktionen bereit.
+This application is a secure chat system that allows user registration, login, and communication in encrypted chat rooms. The communication is handled via an API, and messages are secured using AES-GCM encryption.
 
-### Ablauf
-1. **Start der Anwendung**: `main.py` prüft die Erreichbarkeit der API und startet die Benutzeroberfläche (`ui.py`).
-2. **Anmeldung/Registrierung**: Der Benutzer kann sich entweder registrieren oder anmelden. Dies geschieht über API-Anfragen.
+## Functionality
+
+The application consists of multiple modules:
+- **main.py**: Starts the application and checks API availability.
+- **ui.py**: Provides the user interface with `tkinter`, manages user interactions, and handles navigation.
+- **crypting.py**: Implements encryption and decryption functions.
+
+### Workflow
+
+1. **Application Startup**: `main.py` checks API availability and launches the UI (`ui.py`).
+2. **Login/Registration**: The user can register or log in via API requests.
 3. **Chatrooms**:
-   - Erstellen eines neuen Chatrooms mit einem Namen und einem Schlüssel.
-   - Beitreten zu einem existierenden Chatroom mit dem zugehörigen Schlüssel.
-4. **Nachrichtenversand**:
-   - Nachrichten werden verschlüsselt und an die API gesendet.
-   - Empfangene Nachrichten werden entschlüsselt und in der UI angezeigt.
-5. **Nachrichtenverwaltung**:
-   - Nachrichten können aktualisiert und gelöscht werden.
+   - Create a new chatroom with a name and key.
+   - Join an existing chatroom using the corresponding key.
+4. **Message Sending**:
+   - Messages are encrypted and sent to the API.
+   - Received messages are decrypted and displayed in the UI.
+5. **Message Management**:
+   - Messages can be refreshed and deleted.
    
-## Module im Detail
+## Modules in Detail
+
 ### main.py
-- Importiert `ui.py` und startet die Benutzeroberfläche.
-- Prüft die API-Verfügbarkeit mit `test_api()`.
-- Falls die API nicht erreichbar ist, wird die Anwendung nicht gestartet.
+
+- Imports `ui.py` and starts the user interface.
+- Checks API availability using `test_api()`.
+- If the API is unavailable, the application does not start.
 
 ### ui.py
-- Erstellt das `tkinter`-basierte GUI.
-- Verarbeitet Benutzeranmeldungen und -registrierungen.
-- Verwaltung von Chatrooms (Erstellen, Beitreten).
-- Nachrichtenverwaltung (Senden, Empfangen, Löschen).
-- Verschlüsselung und Entschlüsselung mit `crypting.py`.
+
+- Creates a `tkinter`-based GUI.
+- Handles user login and registration.
+- Manages chatrooms (creating, joining).
+- Handles message sending, receiving, and deletion.
+- Uses `crypting.py` for encryption and decryption.
 
 ### crypting.py
-- Implementiert AES-GCM-Verschlüsselung für sichere Nachrichtenübertragung.
-- `encrypt(message)`: Verschlüsselt eine Nachricht.
-- `decrypt(message)`: Entschlüsselt eine Nachricht.
-- `set_key(key)`: Setzt den Schlüssel für die Verschlüsselung.
 
-## Installation und Nutzung
-### Voraussetzungen
+- Implements AES-GCM encryption for secure message transmission.
+- `encrypt(message)`: Encrypts a message.
+- `decrypt(message)`: Decrypts a message.
+- `set_key(key)`: Sets the encryption key.
+
+## Installation and Usage
+
+### Requirements
+
 - Python 3.x
-- Abhängigkeiten: `tkinter`, `requests`, `cryptography`
+- Dependencies: `tkinter`, `requests`, `cryptography`
 
 ### Installation
-1. Klone das Repository oder lade die Dateien herunter.
-2. Installiere die benötigten Bibliotheken:
+
+1. Clone the repository or download the files.
+2. Install the required libraries:
    ```sh
    pip install requests cryptography
    ```
-3. Starte die Anwendung:
+3. Start the application:
    ```sh
    python main.py
    ```
 
-## API-Endpunkte
-Die Anwendung kommuniziert mit einer API über folgende Endpunkte:
-- `/test_connection`: Prüft die Verbindung.
-- `/login`: Benutzeranmeldung.
-- `/register`: Registrierung.
-- `/create_chatroom`: Erstellt einen neuen Chatroom.
-- `/join_chatroom`: Tritt einem existierenden Chatroom bei.
-- `/send_message`: Sendet eine verschlüsselte Nachricht.
-- `/receive_message`: Ruft Nachrichten ab.
-- `/delete_message`: Löscht eine Nachricht.
+## API Endpoints
 
-## Sicherheit
-- Die Nachrichten werden mit AES-GCM verschlüsselt, um Datenschutz und Integrität zu gewährleisten.
-- Die Passwörter werden mit `hashlib.sha256` gehasht, bevor sie an die API gesendet werden.
+The application communicates with an API using the following endpoints:
+- `/test_connection`: Checks API connectivity.
+- `/login`: Handles user login.
+- `/register`: Registers a new user.
+- `/create_chatroom`: Creates a new chatroom.
+- `/join_chatroom`: Joins an existing chatroom.
+- `/send_message`: Sends an encrypted message.
+- `/receive_message`: Retrieves messages.
+- `/delete_message`: Deletes a message.
 
-## Lizenz
-Dieses Projekt steht unter der Apache-Lizenz.
+## Security
 
+- Messages are encrypted using AES-GCM to ensure privacy and integrity.
+- Passwords are hashed using `hashlib.sha256` before being sent to the API.
+
+## License
+
+This is under the Apache 2.0 license. See the [LICENSE](../LICENSE) file for details.
 
 [Back to main README.md](../README.md)
 
-** This Dokumentation was partialy generated by AI **
+**This documentation was partially generated by AI.**
