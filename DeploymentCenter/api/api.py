@@ -72,17 +72,13 @@ def send_message():
     data = request.get_json()
     chat_name = data.get('chat_name')
     key = data.get('key')
-    message = data.get('message')
+    encrypted_message = data.get('message')
     user = data.get('user')
 
-    if not chat_name or not key or not message or not user:
+    if not chat_name or not key or not encrypted_message or not user:
         return jsonify({'error': 'Please fill all the fields'}), 400
 
     try:
-        cr_instance = cr()
-        cr_instance.set_key(ch().hashing(key))
-        encrypted_message = cr_instance.encrypt(message)
-
         db().add_message({
             'message': encrypted_message,
             'chat_room': chat_name,
