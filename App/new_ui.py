@@ -109,7 +109,6 @@ class UI:
             response = request('/create_chatroom', 'POST', {'name': name, 'key': key})
             request_return = response.json()
             if request_return.get('success'):
-                self.nc.destroy()
                 self.Chat()
         except Exception as e:
             messagebox.showerror('Error', f'Failed to create chatroom: {e}')
@@ -125,6 +124,7 @@ class UI:
         self.key = tk.Entry(self.frame, show='*')
         self.key.place(x=150, y=150)
         tk.Button(self.frame, text='Join', command=self.join_chatroom).place(x=150, y=200)
+        tk.Button(self.frame, text='Main Menu', command=self.main_window).place(x=150, y=250)
 
     def join_chatroom(self):
         self.chat_name = self.name.get()
