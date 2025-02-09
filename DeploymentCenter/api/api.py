@@ -94,10 +94,11 @@ def send_message():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/delete_message', methods=['POST'])
-def delete_message(message_id):
+def delete_message():
     """
     Deletes a message from the database based on the provided message ID.
     """
+    message_id = request.get_json()
     db().delete_message(message_id)
     return jsonify({'success': 'Message deleted'})
 

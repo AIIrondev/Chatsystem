@@ -28,7 +28,12 @@ class Database:
         messages = db['messages']
         messages.create_index('chat_room')
         messages_return = messages.find({'chat_room': chat_room})
-        return messages_return
+        messages_list = []
+        for message in messages_return:
+            message['_id'] = str(message['_id'])
+            messages_list.append(message)
+        client.close()
+        return messages_list
 
     @staticmethod
     def get_message(message_id):

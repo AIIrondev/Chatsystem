@@ -14,7 +14,7 @@ class UI:
         self.key_chatroom = None
         self.root = tk.Tk()
         self.root.title('Chat')
-        self.root.geometry('400x400')
+        self.root.geometry('700x700')
         self.root.resizable(False, False)
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.first = None
@@ -121,22 +121,21 @@ class UI:
         self.name = tk.Entry(self.frame)
         self.name.place(x=150, y=100)
         tk.Label(self.frame, text='Key').place(x=100, y=150)
-        self.key = tk.Entry(self.frame)
+        self.key = tk.Entry(self.frame, show='*')
         self.key.place(x=150, y=150)
         tk.Button(self.frame, text='Join', command=self.join_chatroom).place(x=150, y=200)
 
     def join_chatroom(self):
         self.chat_name = self.name.get()
         key = self.key.get()
-        #try:
-        if True:
+        try:
             response = request('/join_chatroom', 'POST', {'chat_name': self.chat_name, 'key': key})
             request_return = response.json()
             if request_return.get('success'):
                 self.key_chatroom = key
                 self.Chat()
-        #except Exception as e:
-        #    messagebox.showerror('Error', f'Failed to join chatroom: {e}')
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to join chatroom: {e}')
 
     def Chat(self):
         self.clear_window()
@@ -171,26 +170,27 @@ class UI:
         tk.Button(self.frame, text='Refresh', command=self.update_messages).place(x=150, y=375)
         tk.Button(self.frame, text='Main Menu', command=self.main_window).place(x=150, y=400)
 
-        #try:
-        self.update_messages()
-        #except Exception as e:
-        #    messagebox.showerror('Error', f'Failed to update messages: {e}')
+        try:
+            self.update_messages()
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to update messages: {e}')
     
     def update_messages(self):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
 
-        #try:
-        if True:
+        try:
             response = request('/receive_message', 'GET', {'chat_room': self.chat_name})
             messages = response.json().get('message', [])
             cr_instance = cr()
             cr_instance.set_key(hashing(self.key_chatroom))
 
             for message in reversed(messages):  
-                #try:
+                try:
                     if message.get("chat_room") == self.chat_name:
+                        print(message)
                         decrypted_message = cr_instance.decrypt(message["message"])
+                        print(decrypted_message)
                         message_frame = tk.Frame(self.scrollable_frame)
                         message_frame.pack(fill="x", pady=5, side="top", anchor="w")
 
@@ -208,10 +208,10 @@ class UI:
                         )
                         reply_button.pack(side="right", anchor="e")
 
-                #except InvalidTag:
-                #    tk.Label(self.scrollable_frame, text="Error decrypting message").pack(anchor="w")
-        #except Exception as e:
-        #    messagebox.showerror('Error', f'Failed to retrieve messages: {e}')
+                except InvalidTag:
+                    tk.Label(self.scrollable_frame, text="Error decrypting message").pack(anchor="w")
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to retrieve messages: {e}')
 
     def send_message(self):
         message = self.message_user.get()
