@@ -105,14 +105,11 @@ def receive_message():
     """
     chat_room = request.args.get('chat_room')
     
-    print(chat_room)
-
-    if not chat_room:
+    if chat_room == None or chat_room == '':
         return jsonify({'error': 'Chatroom name is required'}), 400
-    
+
     messages = db().get_messages(chat_room)
     return jsonify({'message': messages})
-
 
 @app.route('/create_chatroom', methods=['POST'])
 def create_chatroom():
@@ -125,6 +122,9 @@ def create_chatroom():
 
     if not name or not key:
         return jsonify({'error': 'Please fill all the fields'}), 400
+
+    if ch.get_chatroom(name):
+        return jsonify({'error': 'Chatroom already exists'}), 409
 
     ch.add_chatroom(name, ch.hashing(key))
     return jsonify({'success': 'Chatroom created'}), 201
