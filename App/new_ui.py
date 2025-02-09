@@ -174,10 +174,7 @@ class UI:
         tk.Button(self.frame, text='Refresh', command=self.update_messages).place(x=150, y=375)
         tk.Button(self.frame, text='Main Menu', command=self.main_window).place(x=150, y=400)
 
-        try:
-            self.update_messages()
-        except Exception as e:
-            messagebox.showerror('Error', f'Failed to update messages: {e}')
+        self.update_messages()
     
     def update_messages(self):
         for widget in self.scrollable_frame.winfo_children():
@@ -192,9 +189,7 @@ class UI:
             for message in reversed(messages):  
                 try:
                     if message.get("chat_room") == self.chat_name:
-                        print(message)
                         decrypted_message = cr_instance.decrypt(message["message"])
-                        print(decrypted_message)
                         message_frame = tk.Frame(self.scrollable_frame)
                         message_frame.pack(fill="x", pady=5, side="top", anchor="w")
 
@@ -277,7 +272,6 @@ class test_api:
         
     def test_connection(self):
         response = requests.get(self.url + self.endpoint)
-        print(response.json())
         return response.json()
 
 
