@@ -126,6 +126,40 @@ class DeploymentCenterApp:
             deploy_API.deploy()
             deploy_website.deploy()
 
+class deploy_MongoDB:
+    def __init__(self):
+        pass
+
+    def check_mongo_installed():
+        if sys.platform == "win32":
+            if os.path.exists("C:\\Program Files\\MongoDB\\Server\\4.4\\bin\\mongod.exe"):
+                return True
+            else:
+                return False
+        else:
+            if os.system("which mongod") == 0:
+                return True
+            else:
+                return False
+
+    def install():
+        if sys.platform == "win32":
+            os.system("start /wait msiexec /i " + os.path.join(os.path.dirname(__file__), "mongodb", "mongodb-win32-x86_64-2012plus-4.4.6-signed.msi") + " /quiet")
+        else:
+            os.system("sudo apt-get install mongodb")
+
+    def deploy():
+        if sys.platform == "win32":
+            subprocess.Popen(['cmd.exe', '/c', 'start', 'mongod'])
+        else:
+            subprocess.Popen(['mongod'])
+
+    def stop():
+        if sys.platform == "win32":
+            os.system("taskkill /f /im mongod.exe")
+        else:
+            subprocess.Popen(['killall', 'mongod'])
+
 
 class deploy_API:
     def deploy():
