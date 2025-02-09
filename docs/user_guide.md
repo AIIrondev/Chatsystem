@@ -38,3 +38,5 @@ This app has a few Limitation, because of its focus on the Security aspekt there
 The Security is one of the key parts of this projects, because of this you as the Server owner / deployer can't access the Data that is written on the Data Base without changing the Code at wich point you are completly on your own.
 
 Also Note, this project is under the Apache 2.0 License so read it before doing anything.
+
+[Back](../README.md)

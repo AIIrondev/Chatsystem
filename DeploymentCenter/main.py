@@ -167,6 +167,7 @@ class deploy_API:
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
         else:
             subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
+            #subprocess.Popen(['gunicorn', ' -w 2 -b 127.0.0.1:4999 api:app'])
         
 
     def stop():
@@ -183,12 +184,13 @@ class deploy_website:
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
         else:
             subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
+            #subprocess.Popen(['gunicorn -w 2 -b 127.0.0.1:5000 app:app'])
 
     def stop():
         if sys.platform == "win32":
             os.system("taskkill /f /im python.exe")
         else:
-            subprocess.Popen(['killall', 'python'])
+            subprocess.Popen(['killall', 'gunicorn'])
 
 
 if __name__ == "__main__":
