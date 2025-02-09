@@ -109,6 +109,8 @@ class UI:
             response = request('/create_chatroom', 'POST', {'name': name, 'key': key})
             request_return = response.json()
             if request_return.get('success'):
+                self.key_chatroom = key
+                self.chat_name = name
                 self.Chat()
         except Exception as e:
             messagebox.showerror('Error', f'Failed to create chatroom: {e}')
