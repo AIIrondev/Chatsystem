@@ -166,8 +166,9 @@ class deploy_API:
         if sys.platform == "win32":
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
         else:
-            subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
-            #subprocess.Popen(['gunicorn', ' -w 2 -b 127.0.0.1:4999 api:app'])
+            #subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
+            os.system("cd " + os.path.join(os.path.dirname(__file__), "api"))
+            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:4999', 'api:app'])
         
 
     def stop():
@@ -183,8 +184,9 @@ class deploy_website:
             print("python" + os.path.join(os.path.dirname(__file__), "web", "app.py"))
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
         else:
-            subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
-            #subprocess.Popen(['gunicorn -w 2 -b 127.0.0.1:5000 app:app'])
+            #subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
+            os.system("cd " + os.path.join(os.path.dirname(__file__), "web"))
+            os.system('gunicorn -w 2 -b 127.0.0.1:5000 app:app')
 
     def stop():
         if sys.platform == "win32":
