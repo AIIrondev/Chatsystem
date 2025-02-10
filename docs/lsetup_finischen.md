@@ -165,6 +165,8 @@ Füge hinzu:
 
 ## **Firewall und Sicherheit**
 
+https://certbot.eff.org/instructions?ws=nginx&os=snap
+
 ### **Firewall konfigurieren (UFW)**
 ```bash
 sudo ufw allow 22/tcp
