@@ -163,30 +163,26 @@ class deploy_MongoDB:
 
 class deploy_API:
     def deploy():
+        api_dir = os.path.join(os.path.dirname(__file__), "api")
         if sys.platform == "win32":
-            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
+            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(api_dir, "api.py")], cwd=api_dir)
         else:
-            #subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "api", "api.py")])
-            os.system("cd " + os.path.join(os.path.dirname(__file__), "api"))
-            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:4999', 'api:app'])
-        
+            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:4999 api:app'], cwd=api_dir, log_file=os.path.join(api_dir,"..", "..","log","api.log"))
 
     def stop():
         if sys.platform == "win32":
             os.system("taskkill /f /im python.exe")
         else:
-            subprocess.Popen(['killall', 'python'])
+            subprocess.Popen(['killall', 'gunicorn'])
 
 
 class deploy_website:
     def deploy():
+        web_dir = os.path.join(os.path.dirname(__file__), "web")
         if sys.platform == "win32":
-            print("python" + os.path.join(os.path.dirname(__file__), "web", "app.py"))
-            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
+            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(web_dir, "app.py")], cwd=web_dir)
         else:
-            #subprocess.Popen(['python', os.path.join(os.path.dirname(__file__), "web", "app.py")])
-            os.system("cd " + os.path.join(os.path.dirname(__file__), "web"))
-            os.system('gunicorn -w 2 -b 127.0.0.1:5000 app:app')
+            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:5000 app:app'], cwd=web_dir, log_file=os.path.join(web_dir,"..", "..","log","api.log"))
 
     def stop():
         if sys.platform == "win32":
