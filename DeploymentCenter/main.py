@@ -11,7 +11,7 @@ import time
 class DeploymentCenterApp:
     def __init__(self, root):
         self.root = root
-        self.running_deploy = "OFF"
+        self.running = False
         self.deploying = "Deploy"
         self.root.geometry("800x600")
         self.root.title("Deployment Center")
@@ -26,12 +26,10 @@ class DeploymentCenterApp:
         self.label.place(x=260, y=10)
         self.button_deploy = tk.Button(self.frame, text=self.deploying, font=("Arial", 12), command=self.deploy)
         self.button_deploy.place(x=200, y=300)
-        self.label_deploy_value = tk.Label(self.frame, text=self.running_deploy, font=("Arial", 12))
-        self.label_deploy_value.place(x=200, y=350)
         self.label_api_online = tk.Label(self.frame, text="API: offline", font=("Arial", 12))
-        self.label_api_online.place(x=200, y=400)
+        self.label_api_online.place(x=200, y=350)
         self.label_web_online = tk.Label(self.frame, text="Web: offline", font=("Arial", 12))
-        self.label_web_online.place(x=200, y=450)
+        self.label_web_online.place(x=200, y=400)
         self.button_configure = tk.Button(self.frame, text="Configure", font=("Arial", 12), command=self.configure)
         self.button_configure.place(x=350, y=300)
         self.button_help = tk.Button(self.frame, text="Help", font=("Arial", 12), command=self.help)
@@ -192,15 +190,15 @@ class DeploymentCenterApp:
         webbrowser.open("https://github.com/AIIrondev/Chatsystem")
     
     def deploy(self):
-        if self.running_deploy == "ON":
-            self.running_deploy = "OFF"
+        if online_check.check_api() and online_check.check_deployment():
+            self.running = True
+        else:
             self.running = False
+        if self.running:
             self.deploying = "Deploy"
             deploy.stop()
             threading.Thread(target=self.check_online).start()
         else:
-            self.running_deploy = "ON"
-            self.running = True
             self.deploying = "Stop"
             deploy.deploy()
             threading.Thread(target=self.check_online).start()
@@ -215,6 +213,13 @@ class DeploymentCenterApp:
             self.label_web_online.config(text="Web: online")
         else:
             self.label_web_online.config(text="Web: offline")
+        if online_check.check_api() and online_check.check_deployment():
+            self.deploying = "Stop"
+            self.button_deploy.config(text=self.deploying)
+        else:
+            self.deploying = "Deploy"
+            self.button_deploy.config(text=self.deploying)
+
 
 class deploy_MongoDB:
     def __init__(self):
