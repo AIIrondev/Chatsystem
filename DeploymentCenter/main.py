@@ -338,8 +338,10 @@ class deploy:
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(web_dir, "app.py")], cwd=web_dir)
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(api_dir, "api.py")], cwd=api_dir)
         else:
-            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:4999', 'api:app'], cwd=api_dir)# , log_file=os.path.join(api_dir,"..", "..","log","api.log"
-            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:5000', 'app:app'], cwd=web_dir) # =os.path.join(web_dir,"..", "..","log","api.log")
+            unicorn_path_api = os.path.join(api_dir, "..", "..", "log", "api.log")
+            unicorn_path_web = os.path.join(web_dir, "..", "..", "log", "web.log")
+            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:4999', 'api:app', '>', f'{unicorn_path_api}', '2>&1'], cwd=api_dir)
+            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:5000', 'app:app', '>', f'{unicorn_path_web}', '2>&1'], cwd=web_dir)
 
     def stop():
         if sys.platform == "win32":
