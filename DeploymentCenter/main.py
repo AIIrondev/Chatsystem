@@ -17,6 +17,7 @@ class DeploymentCenterApp:
         self.deploying = "Deploy"
         self.root.geometry("800x600")
         self.root.title("Deployment Center")
+        self.root.resizable(False, False)
         icon_path = os.path.join(os.path.dirname(__file__), "icon.ico")
         icon_image = Image.open(icon_path)
         self.icon = ImageTk.PhotoImage(icon_image)
@@ -30,17 +31,19 @@ class DeploymentCenterApp:
         self.label = tk.Label(self.frame, text="Deployment Center", font=("Arial", 24))
         self.label.place(x=260, y=10)
         self.button_deploy = tk.Button(self.frame, text=self.deploying, font=("Arial", 12), command=self.deploy)
-        self.button_deploy.place(x=200, y=300)
+        self.button_deploy.place(x=100, y=300)
         self.label_api_online = tk.Label(self.frame, text="API: offline", font=("Arial", 12))
-        self.label_api_online.place(x=200, y=350)
+        self.label_api_online.place(x=100, y=350)
         self.label_web_online = tk.Label(self.frame, text="Web: offline", font=("Arial", 12))
-        self.label_web_online.place(x=200, y=400)
+        self.label_web_online.place(x=100, y=400)
+        self.button_deploy_setup = tk.Button(self.frame, text="Setup", font=("Arial", 12), command=self.setup)
+        self.button_deploy_setup.place(x=200, y=300)
         self.button_configure = tk.Button(self.frame, text="Configure", font=("Arial", 12), command=self.configure)
         self.button_configure.place(x=350, y=300)
         self.button_deployment = tk.Button(self.frame, text="Deployment Configuration", font=("Arial", 12), command=self.deployment_config)
-        self.button_deployment.place(x=500, y=300)
+        self.button_deployment.place(x=300, y=350)
         self.button_help = tk.Button(self.frame, text="Help", font=("Arial", 12), command=self.help)
-        self.button_help.place(x=500, y=300)
+        self.button_help.place(x=550, y=300)
 
     def configure(self):
         self.frame.destroy()
@@ -230,6 +233,9 @@ class DeploymentCenterApp:
         else:
             self.deploying = "Deploy"
             self.button_deploy.config(text=self.deploying)
+
+    def setup(self):
+        pass
 
 
 class deploy_MongoDB:
