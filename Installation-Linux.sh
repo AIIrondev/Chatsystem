@@ -4,7 +4,7 @@
 sudo apt update && sudo apt upgrade -y
 
 # Install dependencies
-sudo apt install -y python3 python3-pip git mongodb fail2ban
+sudo apt install -y python3 python3-pip git mongodb fail2ban nginx
 
 # Start and enable MongoDB
 sudo systemctl start mongodb

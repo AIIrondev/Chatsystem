@@ -72,9 +72,80 @@ class DeploymentCenterApp:
         self.button_back = tk.Button(self.frame, text="Back", font=("Arial", 12), command=self.back)
         self.button_back.place(x=150, y=500)
 
+    def deployment_config(self):
+        self.frame.destroy()
+        self.frame = tk.Frame(self.root)
+        self.frame.place(x=0, y=0, width=800, height=600)
+        self.label = tk.Label(self.frame, text="Deployment Configuration", font=("Arial", 24))
+        self.label.place(x=300, y=10)
+        self.label_nginx = tk.Label(self.frame, text="Nginx Configuration", font=("Arial", 12))
+        self.label_nginx.place(x=50, y=50)
+        self.label_nginx_url = tk.Label(self.frame, text="Nginx URL", font=("Arial", 12))
+        self.label_nginx_url.place(x=50, y=100)
+        self.entry_nginx_url = tk.Entry(self.frame, font=("Arial", 12))
+        self.entry_nginx_url.place(x=200, y=100)
+        self.label_nginx_port = tk.Label(self.frame, text="Nginx Port", font=("Arial", 12))
+        self.label_nginx_port.place(x=50, y=150)
+        self.entry_nginx_port = tk.Entry(self.frame, font=("Arial", 12))
+        self.entry_nginx_port.place(x=200, y=150)
+        self.label_nginx_name = tk.Label(self.frame, text="Nginx Name", font=("Arial", 12))
+        self.label_nginx_name.place(x=50, y=200)
+        self.entry_nginx_name = tk.Entry(self.frame, font=("Arial", 12))
+        self.entry_nginx_name.place(x=200, y=200)
+        self.label_firewall = tk.Label(self.frame, text="Firewall Configuration", font=("Arial", 12))
+        self.label_firewall.place(x=50, y=250)
+        self.label_firewall_url = tk.Label(self.frame, text="Firewall URL", font=("Arial", 12))
+        self.label_firewall_url.place(x=50, y=300)
+        self.entry_firewall_url = tk.Entry(self.frame, font=("Arial", 12))
+        self.entry_firewall_url.place(x=200, y=300)
+        self.label_firewall_port1 = tk.Label(self.frame, text="Firewall Port1", font=("Arial", 12))
+        self.label_firewall_port1.place(x=50, y=350)
+        self.entry_firewall_port1 = tk.Entry(self.frame, font=("Arial", 12))
+        self.entry_firewall_port1.place(x=200, y=350)
+        self.label_firewall_port2 = tk.Label(self.frame, text="Firewall Port", font=("Arial", 12))
+        self.label_firewall_port2.place(x=50, y=400)
+        self.entry_firewall_port2 = tk.Entry(self.frame, font=("Arial", 12))
+        self.entry_firewall_port2.place(x=200, y=400)
+        self.button_configure = tk.Button(self.frame, text="Save", font=("Arial", 12), command=self.save_config_deploy)
+        self.button_configure.place(x=50, y=450)
+        self.button_back = tk.Button(self.frame, text="Back", font=("Arial", 12), command=self.back)
+        self.button_back.place(x=150, y=450)
+
     def back(self):
         self.frame.destroy()
         self.main()
+
+    def save_config_deploy(self):
+        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "nginx.conf"), "r") as f:
+            nginx_conf = f.readlines()
+            nginx_conf = [line.strip().split("=")[1] for line in nginx_conf]
+        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "firewall.conf"), "r") as f:
+            firewall_conf = f.readlines()
+            firewall_conf = [line.strip().split("=")[1] for line in firewall_conf]
+        self.nginx_url = self.entry_nginx_url.get()
+        self.nginx_port = self.entry_nginx_port.get()
+        self.nginx_name = self.entry_nginx_name.get()
+        self.firewall_url = self.entry_firewall_url.get()
+        self.firewall_port1 = self.entry_firewall_port1.get()
+        self.firewall_port2 = self.entry_firewall_port2.get()
+        if self.nginx_url != "":
+            with open(os.path.join(os.path.dirname(__file__), "..", "conf", "nginx.conf"), "w") as f:
+                f.write("host=" + self.nginx_url + "\n" + "port=" + nginx_conf[1] + "\n" + "name=" + nginx_conf[2])
+        if self.nginx_port != "":
+            with open(os.path.join(os.path.dirname(__file__), "..", "conf", "nginx.conf"), "w") as f:
+                f.write("host=" + nginx_conf[0] + "\n" + "port=" + self.nginx_port + "\n" + "name=" + nginx_conf[2])
+        if self.nginx_name != "":
+            with open(os.path.join(os.path.dirname(__file__), "..", "conf", "nginx.conf"), "w") as f:
+                f.write("host=" + nginx_conf[0] + "\n" + "port=" + nginx_conf[1] + "\n" + "name=" + self.nginx_name)
+        if self.firewall_url != "":
+            with open(os.path.join(os.path.dirname(__file__), "..", "conf", "firewall.conf"), "w") as f:
+                f.write("host=" + self.firewall_url + "\n" + "port1=" + firewall_conf[1] + "\n" + "port2=" + firewall_conf[2])
+        if self.firewall_port1 != "":
+            with open(os.path.join(os.path.dirname(__file__), "..", "conf", "firewall.conf"), "w") as f:
+                f.write("host=" + firewall_conf[0] + "\n" + "port1=" + self.firewall_port1 + "\n" + "port2=" + firewall_conf[2])
+        if self.firewall_port2 != "":
+            with open(os.path.join(os.path.dirname(__file__), "..", "conf", "firewall.conf"), "w") as f:
+                f.write("host=" + firewall_conf[0] + "\n" + "port1=" + firewall_conf[1] + "\n" + "port2=" + self.firewall_port2)
 
     def save_config(self):
         with open(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"), "r") as f:
@@ -117,14 +188,12 @@ class DeploymentCenterApp:
             self.label_deploy_value.config(text="OFF")
             self.running = False
             self.button_deploy.config(text="Deploy")
-            deploy_API.stop()
-            deploy_website.stop()
+            deploy.stop()
         else:
             self.label_deploy_value.config(text="ON")
             self.running = True
             self.button_deploy.config(text="Stop")
-            deploy_API.deploy()
-            deploy_website.deploy()
+            deploy.deploy()
 
 class deploy_MongoDB:
     def __init__(self):
@@ -161,28 +230,46 @@ class deploy_MongoDB:
             subprocess.Popen(['killall', 'mongod'])
 
 
-class deploy_API:
-    def deploy():
-        api_dir = os.path.join(os.path.dirname(__file__), "api")
-        if sys.platform == "win32":
-            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(api_dir, "api.py")], cwd=api_dir)
-        else:
-            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:4999 api:app'], cwd=api_dir, log_file=os.path.join(api_dir,"..", "..","log","api.log"))
+class setup:
+    def nginx(Port=80, Host="localhost"):
+        subprocess.Popen(['sudo', 'touch', '/etc/nginx/sites-available/chatroom'])
+        with open('/etc/nginx/sites-available/chatroom', 'w') as f:
+            f.write("server {\n")
+            f.write(f"    listen {Port};\n")
+            f.write(f"    server_name {Host};\n")
+            f.write("    location / {\n")
+            f.write("        proxy_pass http://127.0.0.1:5000;\n")
+            f.write("        proxy_set_header Host $host;\n")
+            f.write("        proxy_set_header X-Real-IP $remote_addr;\n")
+            f.write("        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n")
+            f.write("    }\n")
+            f.write("}\n")
+        subprocess.Popen(['sudo', 'ln', '-s', '/etc/nginx/sites-available/chatroom', '/etc/nginx/sites-enabled/'])
+        subprocess.Popen(['sudo', 'nginx', '-s', 'reload'])
+    
+    def firewall(Port1=80, Port2=5000, Host="localhost"):
+        subprocess.Popen(['sudo', 'ufw', 'allow', str(Port1)])
+        subprocess.Popen(['sudo', 'ufw', 'allow', str(Port2)])
+        subprocess.Popen(['sudo', 'ufw', 'allow', 'ssh'])
+        subprocess.Popen(['sudo', 'ufw', 'enable'])
+        subprocess.Popen(['sudo', 'ufw', 'status'])
+        subprocess.Popen(['sudo', 'ufw', 'status', 'verbose'])
+    
+    def fail2ban():
+        subprocess.Popen(['sudo', 'systemctl', 'start', 'fail2ban'])
+        subprocess.Popen(['sudo', 'systemctl', 'enable', 'fail2ban'])
 
-    def stop():
-        if sys.platform == "win32":
-            os.system("taskkill /f /im python.exe")
-        else:
-            subprocess.Popen(['killall', 'gunicorn'])
 
-
-class deploy_website:
+class deploy:
     def deploy():
         web_dir = os.path.join(os.path.dirname(__file__), "web")
+        api_dir = os.path.join(os.path.dirname(__file__), "api")
         if sys.platform == "win32":
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(web_dir, "app.py")], cwd=web_dir)
+            subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(api_dir, "api.py")], cwd=api_dir)
         else:
-            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:5000 app:app'], cwd=web_dir, log_file=os.path.join(web_dir,"..", "..","log","api.log"))
+            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:4999 api:app'], cwd=api_dir)# , log_file=os.path.join(api_dir,"..", "..","log","api.log"
+            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:5000 app:app'], cwd=web_dir) # =os.path.join(web_dir,"..", "..","log","api.log")
 
     def stop():
         if sys.platform == "win32":
