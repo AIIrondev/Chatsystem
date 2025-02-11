@@ -3,11 +3,16 @@ import os
 import sys
 import webbrowser
 import subprocess
+import requests
+import threading
+import time
 
 
 class DeploymentCenterApp:
     def __init__(self, root):
         self.root = root
+        self.running_deploy = "OFF"
+        self.deploying = "Deploy"
         self.root.geometry("800x600")
         self.root.title("Deployment Center")
         # self.root.iconbitmap(os.path.join(os.path.dirname(__file__), "icon.ico"))
@@ -17,13 +22,16 @@ class DeploymentCenterApp:
     def main(self):
         self.frame = tk.Frame(self.root)
         self.frame.place(x=0, y=0, width=800, height=600)
-
         self.label = tk.Label(self.frame, text="Deployment Center", font=("Arial", 24))
         self.label.place(x=260, y=10)
-        self.button_deploy = tk.Button(self.frame, text="Deploy", font=("Arial", 12), command=self.deploy)
+        self.button_deploy = tk.Button(self.frame, text=self.deploying, font=("Arial", 12), command=self.deploy)
         self.button_deploy.place(x=200, y=300)
-        self.label_deploy_value = tk.Label(self.frame, text="OFF", font=("Arial", 12))
+        self.label_deploy_value = tk.Label(self.frame, text=self.running_deploy, font=("Arial", 12))
         self.label_deploy_value.place(x=200, y=350)
+        self.label_api_online = tk.Label(self.frame, text="API: offline", font=("Arial", 12))
+        self.label_api_online.place(x=200, y=400)
+        self.label_web_online = tk.Label(self.frame, text="Web: offline", font=("Arial", 12))
+        self.label_web_online.place(x=200, y=450)
         self.button_configure = tk.Button(self.frame, text="Configure", font=("Arial", 12), command=self.configure)
         self.button_configure.place(x=350, y=300)
         self.button_help = tk.Button(self.frame, text="Help", font=("Arial", 12), command=self.help)
@@ -184,16 +192,29 @@ class DeploymentCenterApp:
         webbrowser.open("https://github.com/AIIrondev/Chatsystem")
     
     def deploy(self):
-        if self.label_deploy_value.cget("text") == "ON":
-            self.label_deploy_value.config(text="OFF")
+        if self.running_deploy == "ON":
+            self.running_deploy = "OFF"
             self.running = False
-            self.button_deploy.config(text="Deploy")
+            self.deploying = "Deploy"
             deploy.stop()
+            threading.Thread(target=self.check_online).start()
         else:
-            self.label_deploy_value.config(text="ON")
+            self.running_deploy = "ON"
             self.running = True
-            self.button_deploy.config(text="Stop")
+            self.deploying = "Stop"
             deploy.deploy()
+            threading.Thread(target=self.check_online).start()
+
+    def check_online(self):
+        time.sleep(5)
+        if online_check.check_api():
+            self.label_api_online.config(text="API: online")
+        else:
+            self.label_api_online.config(text="API: offline")
+        if online_check.check_deployment():
+            self.label_web_online.config(text="Web: online")
+        else:
+            self.label_web_online.config(text="Web: offline")
 
 class deploy_MongoDB:
     def __init__(self):
@@ -260,6 +281,33 @@ class setup:
         subprocess.Popen(['sudo', 'systemctl', 'enable', 'fail2ban'])
 
 
+class online_check:
+    def check_api():
+        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "api.conf"), "r") as f:
+            api_conf = f.readlines()
+            api_conf = [line.strip().split("=")[1] for line in api_conf]
+        try:
+            response = requests.get(f"http://{api_conf[0]}:{api_conf[1]}/test_connection")
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+        except:
+            return False
+    
+    def check_deployment():
+        with open(os.path.join(os.path.dirname(__file__), "..", "conf", "website.conf"), "r") as f:
+            deployment_conf = f.readlines()
+            deployment_conf = [line.strip().split("=")[1] for line in deployment_conf]
+        try:
+            response = requests.get(f"http://{deployment_conf[0]}:{deployment_conf[1]}/test_connection")
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+        except:
+            return False
+
 class deploy:
     def deploy():
         web_dir = os.path.join(os.path.dirname(__file__), "web")
@@ -268,8 +316,8 @@ class deploy:
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(web_dir, "app.py")], cwd=web_dir)
             subprocess.Popen(['cmd.exe', '/c', 'start', 'python', os.path.join(api_dir, "api.py")], cwd=api_dir)
         else:
-            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:4999 api:app'], cwd=api_dir)# , log_file=os.path.join(api_dir,"..", "..","log","api.log"
-            subprocess.Popen(['gunicorn', '-w 2 -b 127.0.0.1:5000 app:app'], cwd=web_dir) # =os.path.join(web_dir,"..", "..","log","api.log")
+            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:4999', 'api:app'], cwd=api_dir)# , log_file=os.path.join(api_dir,"..", "..","log","api.log"
+            subprocess.Popen(['gunicorn', '-w', '2', '-b', '127.0.0.1:5000', 'app:app'], cwd=web_dir) # =os.path.join(web_dir,"..", "..","log","api.log")
 
     def stop():
         if sys.platform == "win32":

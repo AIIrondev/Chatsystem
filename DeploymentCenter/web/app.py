@@ -18,6 +18,10 @@ with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'website.c
     app.secret_key = str(api_conf[3].split('=')[1])
     f.close()
 
+@app.route('/test_connection', methods=['GET'])
+def test_connection():
+    return {'status': 'success', 'message': 'Connection successful', 'version': __version__, 'status_code': 200}
+
 @app.route('/')
 def home():
     if 'username' in session:
