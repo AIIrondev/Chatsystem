@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import PhotoImage
+from PIL import Image, ImageTk
 import os
 import sys
 import webbrowser
@@ -15,7 +17,10 @@ class DeploymentCenterApp:
         self.deploying = "Deploy"
         self.root.geometry("800x600")
         self.root.title("Deployment Center")
-        # self.root.iconbitmap(os.path.join(os.path.dirname(__file__), "icon.ico"))
+        icon_path = os.path.join(os.path.dirname(__file__), "icon.ico")
+        icon_image = Image.open(icon_path)
+        self.icon = ImageTk.PhotoImage(icon_image)
+        self.root.iconphoto(True, self.icon)
         self.main()
         self.root.mainloop()
 
@@ -32,6 +37,8 @@ class DeploymentCenterApp:
         self.label_web_online.place(x=200, y=400)
         self.button_configure = tk.Button(self.frame, text="Configure", font=("Arial", 12), command=self.configure)
         self.button_configure.place(x=350, y=300)
+        self.button_deployment = tk.Button(self.frame, text="Deployment Configuration", font=("Arial", 12), command=self.deployment_config)
+        self.button_deployment.place(x=500, y=300)
         self.button_help = tk.Button(self.frame, text="Help", font=("Arial", 12), command=self.help)
         self.button_help.place(x=500, y=300)
 
@@ -197,10 +204,14 @@ class DeploymentCenterApp:
         if self.running:
             self.deploying = "Deploy"
             deploy.stop()
+            self.label_api_online.config(text="API: ...waiting for Shutdown...")
+            self.label_web_online.config(text="Web: ...waiting for Shutdown...")
             threading.Thread(target=self.check_online).start()
         else:
             self.deploying = "Stop"
             deploy.deploy()
+            self.label_api_online.config(text="API: ...waiting for Start...")
+            self.label_web_online.config(text="Web: ...waiting for Start...")
             threading.Thread(target=self.check_online).start()
 
     def check_online(self):
@@ -273,7 +284,7 @@ class setup:
         subprocess.Popen(['sudo', 'ln', '-s', '/etc/nginx/sites-available/chatroom', '/etc/nginx/sites-enabled/'])
         subprocess.Popen(['sudo', 'nginx', '-s', 'reload'])
     
-    def firewall(Port1=80, Port2=5000, Host="localhost"):
+    def firewall(Port1=80, Port2=5000):
         subprocess.Popen(['sudo', 'ufw', 'allow', str(Port1)])
         subprocess.Popen(['sudo', 'ufw', 'allow', str(Port2)])
         subprocess.Popen(['sudo', 'ufw', 'allow', 'ssh'])
