@@ -75,7 +75,7 @@ To get the application up and running, follow these steps for installation.
 
 2. **Clone the Repository**:
     ```bash
-    git clone https://github.com/yourusername/chat-room.git
+    git clone https://github.com/aiirondev/chat-room.git
     cd chat-room
     ```
 
