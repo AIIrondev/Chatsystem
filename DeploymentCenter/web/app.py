@@ -21,6 +21,8 @@ from database import User as us
 from database import Chatroom as ch
 from datetime import datetime
 from cryptography.exceptions import InvalidTag
+from flask import jsonify
+from bson import ObjectId
 
 
 app = Flask(__name__)
@@ -246,6 +248,34 @@ def delete_message(message_id):
         flash(f'Failed to delete message: {e}', 'error')
 
     return redirect(url_for('chat', chat_name=session['chat_name']))
+
+@app.route('/get_messages/<chatroom_name>', methods=['GET'])
+def get_messages(chatroom_name):
+    if 'username' not in session or 'chat_name' not in session:
+        return redirect(url_for('login'))
+    
+    key = session['chat_key']
+    cr_instance = cr()
+    hashed_key = ch.hashing(key)
+    cr_instance.set_key(hashed_key)
+
+    messages = db().get_messages(chatroom_name)
+    decrypted_messages = []
+    for message in messages:
+        try:
+            if message['chat_room'] == chatroom_name:
+                decrypted_message = cr_instance.decrypt(message['message'])
+                decrypted_messages.append({
+                    'id': str(message['_id']),
+                    'user': message['user'],
+                    'content': decrypted_message,
+                    'date': message['Date'],
+                })
+        except InvalidTag:
+            return jsonify({'error': 'Invalid key'}), 400
+
+    return jsonify(decrypted_messages)
+
 
 def main_run():
     app.run(host=host, port=port, debug=True)
