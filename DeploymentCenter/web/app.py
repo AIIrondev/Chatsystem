@@ -193,6 +193,12 @@ def send_message(chatroom_name):
         flash('Message cannot be empty', 'error')
         return redirect(url_for('chat'))
 
+    for element in message:
+        if element == '<' or element == '>':
+            flash('Message cannot contain "<" or ">"', 'error')
+            return redirect(url_for('chat'))
+    print(message + " " + key + " " + chatroom_name + " " + session['username'])
+
     try:
         cr_instance = cr()
         hashed_key = ch.hashing(key)
