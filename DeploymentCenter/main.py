@@ -213,7 +213,7 @@ class DeploymentCenterApp:
                 f.write("host=" + deployment_conf[0] + "\n" + "port=" + deployment_conf[1] + "\n" + "name=" + self.deployment_name + "\n" + "secret_key=" + deployment_conf[3])
 
     def help(self):
-        webbrowser.open("https://github.com/AIIrondev/Chatsystem")
+        webbrowser.open("https://github.com/AIIrondev/Chatsystem/blob/main/docs/user_guide.md")
     
     def deploy(self):
         if online_check.check_api() and online_check.check_deployment():
@@ -252,7 +252,14 @@ class DeploymentCenterApp:
 
     def setup(self):
         pass
-
+        '''
+        if deploy_MongoDB.check_mongo_installed():
+            pass
+        setup.nginx()
+        setup.firewall()
+        setup.fail2ban()
+        '''
+        
 
 class deploy_MongoDB:
     def __init__(self):
