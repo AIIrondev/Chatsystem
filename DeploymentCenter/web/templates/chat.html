@@ -48,7 +48,6 @@
             .then(response => response.json())
             .then(data => {
                 const chatMessages = document.getElementById('chat-messages');
-                const isScrolledToBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight;
                 chatMessages.innerHTML = '';
                 data.forEach(message => {
                     const messageDiv = document.createElement('div');
