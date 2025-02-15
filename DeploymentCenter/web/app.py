@@ -194,10 +194,9 @@ def send_message(chatroom_name):
         return redirect(url_for('chat'))
 
     for element in message:
-        if element == '<' or element == '>':
+        if element == '<' or element == '>': # Preventing XSS
             flash('Message cannot contain "<" or ">"', 'error')
             return redirect(url_for('chat'))
-    print(message + " " + key + " " + chatroom_name + " " + session['username'])
 
     try:
         cr_instance = cr()
