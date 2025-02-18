@@ -283,7 +283,7 @@ def get_messages(chatroom_name):
 
 
 def main_run():
-    app.run(host=host, port=port, debug=True)
+    app.run(host=host, port=port)
 
 if __name__ == '__main__':
     main_run()
