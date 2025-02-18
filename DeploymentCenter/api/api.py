@@ -14,6 +14,7 @@
    limitations under the License.
 '''
 import os
+import logging
 from flask import Flask, request, jsonify
 from database import User as us
 from database import Chatroom as ch
@@ -21,6 +22,7 @@ from database import Database as db
 from datetime import datetime
 from crypting import Crypting as cr
 app = Flask(__name__)
+app.logger.setLevel(logging.ERROR)
 
 with open(os.path.join(os.path.dirname(__file__), "..", "..", 'conf', 'api.conf'), 'r') as f:
     api_conf = f.read().splitlines()
@@ -101,7 +103,8 @@ def send_message():
         })
         return jsonify({'success': 'Message sent'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error('Exception occurred', exc_info=True)
+        return jsonify({'error': 'An internal error has occurred!'}), 500
 
 @app.route('/delete_message', methods=['POST'])
 def delete_message():
