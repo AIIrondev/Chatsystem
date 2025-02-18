@@ -29,6 +29,4 @@ pip3 install -r requirements.txt
 nohup python3 DeploymentCenter/main.py > /dev/null 2>&1 &
 
 # Display success message
-echo "Installation complete! The chat room server is now running."
-echo "You can access the web app at http://<your-server-ip>:5000"
-echo "You can access the api at http://<your-server-ip>:4999"
+echo "DeploymentCenter application has been successfully deployed."
