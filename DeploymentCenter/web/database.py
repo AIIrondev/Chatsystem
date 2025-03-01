@@ -84,7 +84,7 @@ class Chatroom:
 
     @staticmethod
     def hashing(key):
-        return hashlib.sha256(key.encode()).hexdigest()
+        return hashlib.md5(key.encode()).hexdigest()
 
     @staticmethod
     def check_key(key):
@@ -137,14 +137,14 @@ class User:
 
     @staticmethod
     def hashing(password):
-        return hashlib.sha512(password.encode()).hexdigest()
+        return hashlib.md5(password.encode()).hexdigest()
 
     @staticmethod
     def check_nm_pwd(username, password):
         client = MongoClient('localhost', 27017)
         db = client['Chatsystem']
         users = db['users']
-        hashed_password = hashlib.sha512(password.encode()).hexdigest()
+        hashed_password = hashlib.md5(password.encode()).hexdigest()
         user = users.find_one({'Username': username, 'Password': hashed_password})
         client.close()
         return user
