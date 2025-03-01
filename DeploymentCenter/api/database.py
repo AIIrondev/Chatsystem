@@ -18,6 +18,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import hashlib
 from tkinter import messagebox
+from argon2 import PasswordHasher
 
 class Database:
     def __init__(self):
@@ -143,14 +144,16 @@ class User:
 
     @staticmethod
     def hashing(password):
-        return hashlib.sha256(password.encode()).hexdigest()
+        ph = PasswordHasher()
+        return ph.hash(password.encode())
 
     @staticmethod
     def check_nm_pwd(username, password):
+        ph = PasswordHasher()
         client = MongoClient('localhost', 27017)
         db = client['Chatsystem']
         users = db['users']
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        hashed_password = ph.hash(password.encode())
         user = users.find_one({'Username': username, 'Password': hashed_password})
         client.close()
         return user
